@@ -5,6 +5,8 @@ package Model;/*
 */
 
 import de.fhpotsdam.unfolding.geo.Location;
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 public class EarthQuakeEntry implements Comparable<EarthQuakeEntry>{
 
@@ -14,6 +16,8 @@ public class EarthQuakeEntry implements Comparable<EarthQuakeEntry>{
   private final String locationTitle; // immutable text location
   private final String age; // immutable age
   private final String title; // immutable whole rss title
+  private final BigDecimal exactMagnitude; // immutable bigDecimal object representing exact magnitude
+  private final BigDecimal exactDepth; // immutable bigDecimal object representing exact Depth
 
   /*
   * Main and only Constructor for the POJO object to initialize all Final field (Immutable)
@@ -33,14 +37,24 @@ public class EarthQuakeEntry implements Comparable<EarthQuakeEntry>{
     * M 1.2 - 17km S of Trona, CA
     * more than one case, so in regex, made sure that minus surrounded with whitespaces both sides
     * */
-      this.magnitude = Double.parseDouble(
-          titleItems[0]
-              .split("\\s+")[1]);
+    // extracts the String magnitude, made into a local variable because used twice, for big decimal and for magnitude
+    String tempMagnitude = titleItems[0]
+        .split("\\s+")[1];
+    this.exactMagnitude = new BigDecimal(tempMagnitude);
+    this.magnitude = Double.parseDouble(tempMagnitude);
+
       this.locationTitle = titleItems[1].trim();
     String[] points = locationPoints.split("\\s+");
     this.loc = new Location(Float.parseFloat(points[0]),Float.parseFloat(points[1]));
-    this.depth = Double.parseDouble(elevation);
     this.age = age;
+    // next series of steps is to get the depth value from elevation
+    // the most accurate division that can be accomplished to get the exact depth
+    BigDecimal tempDepth = new BigDecimal(Math.abs(Double.parseDouble(elevation)));
+    tempDepth = tempDepth.divide(new BigDecimal("100.0"));
+    this.exactDepth = tempDepth.divide(new BigDecimal("10.0"));
+    // double representation of depth
+    this.depth = this.exactDepth.doubleValue();
+
   }
 
   public String getLocationTitle()
@@ -68,6 +82,16 @@ public class EarthQuakeEntry implements Comparable<EarthQuakeEntry>{
     return this.age;
   }
 
+
+  public BigDecimal getExactMagnitude()
+  {
+    return this.exactMagnitude;
+  }
+  public BigDecimal getExactDepth()
+  {
+    return this.exactDepth;
+  }
+
   public double getDepth()
   {
     return this.depth;
@@ -79,7 +103,7 @@ public class EarthQuakeEntry implements Comparable<EarthQuakeEntry>{
   }
 
   /*
-  * equals methods used to separate Objects using the text Location and magnitude
+  * equals methods used to separate Objects using the text Location and exact magnitude
   * */
   @Override
   public boolean equals(Object o)
@@ -91,26 +115,25 @@ public class EarthQuakeEntry implements Comparable<EarthQuakeEntry>{
     EarthQuakeEntry anotherQuake = (EarthQuakeEntry) o;
     return this.locationTitle.equals(anotherQuake.getLocationTitle())
           &&
-          Double.compare(this.magnitude,anotherQuake.getMagnitude()) == 0;
+          this.exactMagnitude.compareTo(anotherQuake.getExactMagnitude()) == 0;
   }
 
   /*
-  * HashCode so if put in hashed structure, using the text Location and the magnitude
+  * HashCode so if put in hashed structure, using the text Location and the exact magnitude
   * */
   @Override
   public int hashCode()
   {
-    return ( this.locationTitle.hashCode() + new Double(this.magnitude).hashCode() ) * 31;
+    return ( this.locationTitle.hashCode() + this.exactMagnitude.hashCode() ) * 31;
   }
 
   /*
-  * Natural Ordering using the magnitude to sort ascendingly
-  *
+  * Natural Ordering using the exact magnitude to sort ascendingly
   * */
   @Override
   public int compareTo(EarthQuakeEntry anotherQuake)
   {
-    return Double.compare(this.magnitude,anotherQuake.getMagnitude());
+    return this.exactMagnitude.compareTo(anotherQuake.getExactMagnitude());
   }
 
   /*
@@ -119,7 +142,7 @@ public class EarthQuakeEntry implements Comparable<EarthQuakeEntry>{
   @Override
   public String toString()
   {
-    return "Title : "+ this.locationTitle + " lat, lon : " +this.loc.getLat()+", "+this.loc.getLon()+" Magnitude: "+this.magnitude +" Age: "+this.age;
+    return "Title : "+ this.locationTitle + " , lat, lon : " +this.loc.getLat()+", "+this.loc.getLon()+" , Magnitude: "+this.magnitude +", Depth: "+this.depth+" , Age: "+this.age;
   }
 
 
