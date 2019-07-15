@@ -74,6 +74,25 @@ public class LifeExpectancyMarkerHandler {
     );
     return markers;
   }
+
+  /*
+   * Overloaded File Chooser Version
+   * */
+  public static List<Marker> makeLifeExpectancyMarkers(PApplet applet, int year)
+  {
+    // list of featrures representing all countries from JSON file
+    List<Feature> countries = GeoJSONReader.loadDataFromJSON(applet,"./data/countries.geo.json");
+    //list of markers made using the list of features using MapUtils method that makes markers
+    // for given list<Feature> returning List<Marker>
+    List<Marker> markers = MapUtils.createSimpleMarkers(countries);
+    //private helper method that shades the markers
+    LifeExpectancyMarkerHandler.shadeMarkers(applet,markers,new LifeExpectancyFeedParser()
+        .getLifeExpectancyMap(year)
+    );
+    return markers;
+  }
+
+
   /*
   * a private helper method that sets the colors of the markers made by geo locations of countries
   * according to id of country from jsob object that matches id of lifeExpectency map

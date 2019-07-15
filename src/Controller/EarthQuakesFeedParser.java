@@ -633,6 +633,7 @@ public class EarthQuakesFeedParser {
   {
     for(EarthQuakeFilter f : filters)
     {
+      if(f == null) continue; // made for API reason in GUI
       if(!f.test(entry))
         return false;
     }
