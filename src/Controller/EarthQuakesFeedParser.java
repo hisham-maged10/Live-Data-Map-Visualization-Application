@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -314,15 +317,27 @@ public class EarthQuakesFeedParser {
 
   /*
    * default constructor that will prompt the user to choose the ATOM file of choice
-   * using a File chooser
+   * using a File chooser of swing
+   * @Param: the stage that will be used to open file chooser from
    * */
   public EarthQuakesFeedParser()
   {
     init(getFile());
   }
 
+
+  /*
+   * Stage constructor that will prompt the user to choose the ATOM file of choice
+   * using a File chooser of javafx
+   * @Param: the stage that will be used to open file chooser from
+   * */
+  public EarthQuakesFeedParser(Stage stage)
+  {
+    init(getFile(stage));
+  }
+
   /* String constructor version that will use the filePath string to locate the file and make it if valid
-  * @ParamL filepath of the XML file as a string
+  * @Param: filepath of the XML file as a string
   */
   public EarthQuakesFeedParser(String filePath)
   {
@@ -469,6 +484,7 @@ public class EarthQuakesFeedParser {
   }
 
   /*
+  * Swing version >> JFileChooser
   * gets The File using a FileChooser and filters the files into atom,xml extension
   * and if no file was selected it loads the default file as ./data/2.5_week.atom
   * */
@@ -480,6 +496,25 @@ public class EarthQuakesFeedParser {
     chooser.setMultiSelectionEnabled(false);
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     return chooser.showOpenDialog(null) == -1 ? new File("./data/2.5_week.atom") : chooser.getSelectedFile();
+  }
+
+  /*
+   * javafx version >> FileChooser (needs a stage)
+   * gets The File using a FileChooser and filters the files into atom,xml extension
+   * and if no file was selected it loads the default file as ./data/2.5_week.atom
+   * */
+  private File getFile(Stage stage)
+  {
+    FileChooser chooser = new FileChooser();
+    chooser.setInitialDirectory(new File("."));
+    chooser.setTitle("Choose the RSS Feed local file");
+    chooser.getExtensionFilters().addAll(
+        new ExtensionFilter("Atom/XML/RSSFeed files","*.atom","*.Atom","*.ATOM","*.xml","*.Xml","*.XML")
+    );
+    File file = chooser.showOpenDialog(stage);
+    if(file == null)
+      throw new IllegalArgumentException("You must select an Atom/XML/RSS feed file to do operation!");
+    return file;
   }
 
   /*
@@ -578,7 +613,7 @@ public class EarthQuakesFeedParser {
   public static List<EarthQuakeEntry> filterEarthQuakeEntries(List<EarthQuakeEntry> earthquakes,EarthQuakeFilter... filters)
   {
     if(earthquakes == null || earthquakes.isEmpty())
-      throw new IllegalArgumentException("earthquake entries and filters can't be either null or empty");
+      throw new IllegalArgumentException("please check your input, and if Live data >> check internet connection");
     if(filters == null || filters.length == 0) // if no filters, return the same List given without any operation
       return earthquakes;
 
@@ -609,7 +644,7 @@ public class EarthQuakesFeedParser {
   public static List<PointFeature> filterIntoPointFeatures(List<EarthQuakeEntry> earthquakes,EarthQuakeFilter... filters)
   {
     if(earthquakes == null  || earthquakes.isEmpty())
-      throw new IllegalArgumentException("earthquake entries and filters can't be either null or empty");
+      throw new IllegalArgumentException("please check your input, and if Live data >> check internet connection");
     if(filters == null || filters.length == 0) // if no filters, return the PointFeature List using the given EarthQuakeEntry list without any operation
       return new EarthQuakesFeedParser(earthquakes).getParsedFeatures();
     List<EarthQuakeEntry> filteredEntries = EarthQuakesFeedParser.filterEarthQuakeEntries(earthquakes,filters);

@@ -12,7 +12,9 @@ import de.fhpotsdam.unfolding.utils.ScreenPosition;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import javafx.stage.Stage;
 import processing.core.PApplet;
 
 public class EarthQuakesMarkerHandler {
@@ -24,6 +26,9 @@ public class EarthQuakesMarkerHandler {
   public enum EarthQuakeMarker{
     MAGNITUDE,DEPTH;
   }
+
+  // holds unmodefiable list of latest entries Made
+  public static List<EarthQuakeEntry> lastMadeEntries = Collections.EMPTY_LIST; //unmodefiable
 
 
   /*
@@ -47,6 +52,8 @@ public class EarthQuakesMarkerHandler {
       tempMarker.setLocation(pf.getLocation());
       tempMarker.setProperties(pf.getProperties());
     }
+
+    lastMadeEntries = Collections.unmodifiableList(EarthQuakesFeedParser.filterEarthQuakeEntries(entries,filters)); // very bad (doing same operation twice) filtered again for GUI API USAGE //TODO: REFEACTOR LATER
 
     return markers;
   }
@@ -73,6 +80,8 @@ public class EarthQuakesMarkerHandler {
       tempMarker.setProperties(pf.getProperties());
     }
 
+    lastMadeEntries = Collections.unmodifiableList(EarthQuakesFeedParser.filterEarthQuakeEntries(entries,filters)); // very bad (doing same operation twice) filtered again for GUI API USAGE //TODO: REFEACTOR LATER
+
     return markers;
   }
 
@@ -98,16 +107,19 @@ public class EarthQuakesMarkerHandler {
       tempMarker.setProperties(pf.getProperties());
     }
 
+    lastMadeEntries = Collections.unmodifiableList(EarthQuakesFeedParser.filterEarthQuakeEntries(entries,filters)); // very bad (doing same operation twice) filtered again for GUI API USAGE //TODO: REFEACTOR LATER
+
     return markers;
   }
 
   /*
-   * File chooser Version
+   * File chooser swing Version
    *  a static method to make EarthQuake Markers given an XmLFile, the EarthQuakesFeedParser class will parse it, if Valid then used to make the List<PointFeature>
    *  that will be used to make a marker per each using the Location of it and its properties
    *  using the PointFeature version of the earthquake using the EarthQuakesFeedParser setting the properties of
    *  the marker using them
    *  and the Filter vararg is used to filter the to specified needed data by filter objects
+   * @Param: the stage that the file chooser will be opened from
    * @Param: VARARG Filter to apply on parsed data
    * */
   public static List<SimplePointMarker> makeEarthQuakeMarkers(EarthQuakesFeedParser.EarthQuakeFilter... filters)
@@ -121,9 +133,60 @@ public class EarthQuakesMarkerHandler {
       tempMarker.setLocation(pf.getLocation());
       tempMarker.setProperties(pf.getProperties());
     }
+    lastMadeEntries = Collections.unmodifiableList(EarthQuakesFeedParser.filterEarthQuakeEntries(entries,filters)); // very bad (doing same operation twice) //TODO: REFEACTOR LATER
+    return markers;
+  }
+
+  /*
+   * File chooser Version
+   *  a static method to make EarthQuake Markers given an XmLFile, the EarthQuakesFeedParser class will parse it, if Valid then used to make the List<PointFeature>
+   *  that will be used to make a marker per each using the Location of it and its properties
+   *  using the PointFeature version of the earthquake using the EarthQuakesFeedParser setting the properties of
+   *  the marker using them
+   *  and the Filter vararg is used to filter the to specified needed data by filter objects
+   * @Param: the stage that the file chooser will be opened from
+   * @Param: VARARG Filter to apply on parsed data
+   * */
+  public static List<SimplePointMarker> makeEarthQuakeMarkers(Stage stage,EarthQuakesFeedParser.EarthQuakeFilter... filters)
+  {
+    List<SimplePointMarker> markers = new ArrayList<>();
+    List<EarthQuakeEntry> entries = new EarthQuakesFeedParser(stage).getParsedQuakeEntries(); // gets the List containing Pojo objects of earth quake records
+    List<PointFeature> features = EarthQuakesFeedParser.filterIntoPointFeatures(entries,filters); //gets the filtered PointFeatures
+    SimplePointMarker tempMarker = null; // to hold reference to the newly added marker
+    for(PointFeature pf : features) {
+      markers.add((tempMarker = new SimplePointMarker()));
+      tempMarker.setLocation(pf.getLocation());
+      tempMarker.setProperties(pf.getProperties());
+    }
+    lastMadeEntries = Collections.unmodifiableList(EarthQuakesFeedParser.filterEarthQuakeEntries(entries,filters)); // very bad (doing same operation twice) filtered again for GUI API USAGE//TODO: REFEACTOR LATER
 
     return markers;
   }
+
+  /*
+   * same data Version, made for filtering API for same data and for GUI API flexibility
+   *  a static method to make EarthQuake Markers given an XmLFile, the EarthQuakesFeedParser class will parse it, if Valid then used to make the List<PointFeature>
+   *  that will be used to make a marker per each using the Location of it and its properties
+   *  using the PointFeature version of the earthquake using the EarthQuakesFeedParser setting the properties of
+   *  the marker using them
+   *  and the Filter vararg is used to filter the to specified needed data by filter objects
+   * @Param: VARARG Filter to apply on parsed data
+   * */
+  public static List<SimplePointMarker> makeEarthQuakeMarkers(List<EarthQuakeEntry> entries,EarthQuakesFeedParser.EarthQuakeFilter... filters)
+  {
+    List<SimplePointMarker> markers = new ArrayList<>();
+    List<PointFeature> features = EarthQuakesFeedParser.filterIntoPointFeatures(entries,filters); //gets the filtered PointFeatures
+    SimplePointMarker tempMarker = null; // to hold reference to the newly added marker
+    for(PointFeature pf : features) {
+      markers.add((tempMarker = new SimplePointMarker()));
+      tempMarker.setLocation(pf.getLocation());
+      tempMarker.setProperties(pf.getProperties());
+    }
+    lastMadeEntries = Collections.unmodifiableList(EarthQuakesFeedParser.filterEarthQuakeEntries(entries,filters)); // very bad (doing same operation twice) filtered again for GUI API USAGE//TODO: REFEACTOR LATER
+
+    return markers;
+  }
+
   /*
   * public static method that colors the EarthQuakeMarkers and customizes its shape based on its magnitude
   * giving each of light, moderate, intense magnitude earthquake a separate color using ScreenPosition method

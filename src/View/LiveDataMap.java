@@ -10,11 +10,13 @@ import Controller.EarthQuakesFeedParser.EarthQuakeFilter;
 import Controller.EarthQuakesMarkerHandler;
 import Controller.EarthQuakesMarkerHandler.EarthQuakeMarker;
 import Controller.LifeExpectancyMarkerHandler;
+import Model.EarthQuakeEntry;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.Marker;
 import de.fhpotsdam.unfolding.marker.SimplePointMarker;
-import de.fhpotsdam.unfolding.providers.Microsoft.RoadProvider;
+import de.fhpotsdam.unfolding.providers.AbstractMapProvider;
+import de.fhpotsdam.unfolding.providers.Microsoft;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
 import java.io.PrintWriter;
@@ -155,6 +157,20 @@ public class LiveDataMap extends PApplet {
   // default map selection in case of changing data set and another Map rather than earthquakes is chosen, used in GUI
   private static final Map DEFAULT_EARTHQUAKE_MAP_CHOICE = Map.MAGNITUDE_EARTHQUAKES;
 
+
+  // default provider of map
+  private static final AbstractMapProvider DEFAULT_PROVIDER = new Microsoft.RoadProvider();
+
+  // road provider of map
+  private static final AbstractMapProvider ROAD_PROVIDER = new Microsoft.RoadProvider();
+  // Hybrid between Aerial and road provider of map
+  private static final AbstractMapProvider HYBRID_PROVIDER = new Microsoft.HybridProvider();
+  // Aerial provider of map
+  private static final AbstractMapProvider AERIAL_PROVIDER = new Microsoft.AerialProvider();
+
+
+
+
   // main setup method, the looks of the window
   @Override
   public void settings()
@@ -188,10 +204,11 @@ public class LiveDataMap extends PApplet {
 
     // ========================= Filtering Options Menu =======================
     Menu filterMenu = new Menu("Filtering Options"); // main item of operations Menu
-    MenuItem magnitudeFilters = new MenuItem("Filter by Magnitude");
-    MenuItem depthFilters = new MenuItem("Filter by Depth");
     MenuItem bothFilters = new MenuItem("Filter by Magnitude, Depth");
-    filterMenu.getItems().addAll(magnitudeFilters,depthFilters,bothFilters);
+
+    bothFilters.setOnAction(e -> filterOperation());
+
+    filterMenu.getItems().addAll(bothFilters);
 
 
 
@@ -248,10 +265,12 @@ public class LiveDataMap extends PApplet {
     else
       changeData(LIVE_EARTHQUAKE_DATA_PAST_30_DAYS,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
 
+
+    // given a Stage because FileChooser of fx needs a stage to be opened from.
     local.setOnAction( e-> {if(confirmFiltering())
-      changeData(this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
+      changeData(stage,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
     else
-      changeData(this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
+      changeData(stage,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
 
     earthQuakeData.getItems().addAll(lastHour,lastDay,lastWeek,lastMonth,local);
 
@@ -270,10 +289,21 @@ public class LiveDataMap extends PApplet {
     dataSelectionMenu.getItems().addAll(earthQuakeData,lifeExpectancyData);
 
 
+    //======================= Provider Menu Section ====================
+    Menu providerMenu = new Menu("Provider Selection");
+    MenuItem roadProvider = new MenuItem("Road Map");
+    MenuItem aerialProvider = new MenuItem("Aerial Map");
+    MenuItem hybridProvider = new MenuItem("Hybrid Map");
 
+    roadProvider.setOnAction( e -> this.map.mapDisplay.setProvider(ROAD_PROVIDER));
+    aerialProvider.setOnAction( e -> this.map.mapDisplay.setProvider(AERIAL_PROVIDER));
+    hybridProvider.setOnAction( e -> this.map.mapDisplay.setProvider(HYBRID_PROVIDER));
+
+
+    providerMenu.getItems().addAll(roadProvider,aerialProvider,hybridProvider);
     // ====================== Menu bar section ========================
     MenuBar menuBar = new MenuBar(); // makes a menu bar
-    menuBar.getMenus().addAll(operationsMenu,mapSelectionMenu,dataSelectionMenu); // adds Operation Menu and MapSelection menu
+    menuBar.getMenus().addAll(operationsMenu,mapSelectionMenu,dataSelectionMenu,providerMenu); // adds Operation Menu and MapSelection menu
 
 
     // ====================== VBox Container ==========================
@@ -306,6 +336,7 @@ public class LiveDataMap extends PApplet {
     makeScreenPositions();
     writeLocation();
     addLegend();
+    setRestriction();
   }
 
   /*
@@ -323,7 +354,7 @@ public class LiveDataMap extends PApplet {
     // =========================================== EarthQuakes Section ====================================
 
 
-    this.earthQuakesMap = new UnfoldingMap(this,0,0,1920,1080,new RoadProvider());
+    this.earthQuakesMap = new UnfoldingMap(this,0,0,1920,1080,DEFAULT_PROVIDER);
     MapUtils.createDefaultEventDispatcher(this,this.earthQuakesMap);
     /*
     * if you want to filter the earthquake data, use respected EarthQuakesFilter objects for more info about them
@@ -344,7 +375,7 @@ public class LiveDataMap extends PApplet {
 
     // ===========================================  Life Expectancy Section ====================================
 
-    this.lifeExpectancyMap = new UnfoldingMap(this,0,0,1920,1080, new RoadProvider());
+    this.lifeExpectancyMap = new UnfoldingMap(this,0,0,1920,1080, DEFAULT_PROVIDER);
     MapUtils.createDefaultEventDispatcher(this,this.lifeExpectancyMap);
     /*
      * change first parameter in makeLifeExpectancyMarkers
@@ -510,17 +541,50 @@ public class LiveDataMap extends PApplet {
       showAlert(AlertType.ERROR,"Wrong Input",ex.getMessage());
     }catch(Exception ex)
     {
-      showAlert(AlertType.ERROR,"Unexpected error","please contact Main Programmer\n"+ex.getMessage(),ex);
+      showAlert(AlertType.ERROR,"Unexpected error","please contact Hisham Maged\n"+ex.getMessage(),ex);
     }
   }
+
   /*
    * offline version
    * private helper method that changes the dataset of earthquakes used by changing the markers
    * of the earthquakes
+   * @Param: Stage that will be used to open the File Chooser from
    * @Param: map enum to choose Map gonna be changed to
    * @Param: filter vararg to use in case filters are chosen
    * * */
   private void changeData(Map map, EarthQuakeFilter... filters)
+  {
+    try{
+      switch(map)
+      {
+        // same markers, same case
+        case MAGNITUDE_EARTHQUAKES:
+        case DEPTH_EARTHQUAKES:
+          this.earthQuakesMarkers = EarthQuakesMarkerHandler.makeEarthQuakeMarkers(filters);
+          break;
+        case LIFEEXPECTANCY:
+          this.lifeExpectancyMarkers = LifeExpectancyMarkerHandler.makeLifeExpectancyMarkers(this,"./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
+          break;
+      }
+      swapMap(map);
+    }catch(IllegalArgumentException ex)
+    {
+      showAlert(AlertType.ERROR,"Wrong Input",ex.getMessage());
+    }catch(Exception ex)
+    {
+      showAlert(AlertType.ERROR,"Unexpected Error","please contact Hisham Maged\n"+ex.getMessage(),ex);
+    }
+  }
+  /*
+   * offline version filechooser version >> fx
+   * private helper method that changes the dataset of earthquakes used by changing the markers
+   * of the earthquakes
+   * @Param: Stage that will be used to open the File Chooser from
+   * @Param: map enum to choose Map gonna be changed to
+   * @Param: filter vararg to use in case filters are chosen
+   * * */
+  private void changeData(Stage stage,Map map, EarthQuakeFilter... filters)
   {
    try{
     switch(map)
@@ -528,7 +592,7 @@ public class LiveDataMap extends PApplet {
       // same markers, same case
       case MAGNITUDE_EARTHQUAKES:
       case DEPTH_EARTHQUAKES:
-        this.earthQuakesMarkers = EarthQuakesMarkerHandler.makeEarthQuakeMarkers(filters);
+        this.earthQuakesMarkers = EarthQuakesMarkerHandler.makeEarthQuakeMarkers(stage,filters);
         break;
       case LIFEEXPECTANCY:
         this.lifeExpectancyMarkers = LifeExpectancyMarkerHandler.makeLifeExpectancyMarkers(this,"./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
@@ -540,8 +604,39 @@ public class LiveDataMap extends PApplet {
     showAlert(AlertType.ERROR,"Wrong Input",ex.getMessage());
   }catch(Exception ex)
   {
-    showAlert(AlertType.ERROR,"Unexpected Error","please contact Main Programmer\n"+ex.getMessage(),ex);
+    showAlert(AlertType.ERROR,"Unexpected Error","please contact Hisham Maged\n"+ex.getMessage(),ex);
   }
+  }
+
+  /*
+   * same data version for filtering
+   * private helper method that changes the dataset of earthquakes used by changing the markers
+   * of the earthquakes
+   * @Param: map enum to choose Map gonna be changed to
+   * @Param: filter vararg to use in case filters are chosen
+   * * */
+  private void changeData(List<EarthQuakeEntry> entries,Map map, EarthQuakeFilter... filters)
+  {
+    try{
+      switch(map)
+      {
+        // same markers, same case
+        case MAGNITUDE_EARTHQUAKES:
+        case DEPTH_EARTHQUAKES:
+          this.earthQuakesMarkers = EarthQuakesMarkerHandler.makeEarthQuakeMarkers(entries,filters);
+          break;
+        case LIFEEXPECTANCY:
+          this.lifeExpectancyMarkers = LifeExpectancyMarkerHandler.makeLifeExpectancyMarkers(this,"./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
+          break;
+      }
+      swapMap(map);
+    }catch(IllegalArgumentException ex)
+    {
+      showAlert(AlertType.ERROR,"Wrong Input",ex.getMessage());
+    }catch(Exception ex)
+    {
+      showAlert(AlertType.ERROR,"Unexpected Error","please contact Hisham Maged\n"+ex.getMessage(),ex);
+    }
   }
   /*
   * A private helper method that is used in GUI where the user is prompted a text input to input the year
@@ -644,13 +739,13 @@ public class LiveDataMap extends PApplet {
     grid.setPadding(new Insets(20,150,10,10));
     // ====================================== magnitude filters ================================
     TextField exactMagnitude = new TextField(); // input of exact magnitude filter
-    exactMagnitude.setPromptText("Input Exact Magnitude value");
+    exactMagnitude.setPromptText(" Exact value");
     TextField lessMagnitude = new TextField(); // input of lessMagnitude Filter
-    lessMagnitude.setPromptText("Input Upper limit Magnitude value");
+    lessMagnitude.setPromptText("Upper limit value");
     TextField moreMagnitude = new TextField(); // input of moreMagnitude filter
-    moreMagnitude.setPromptText("Input lower limit Magnitude value");
+    moreMagnitude.setPromptText("lower limit value");
     TextField rangeMagnitude = new TextField(); // input of range magnitude filter
-    rangeMagnitude.setPromptText("Input range Magnitude value (x,y)");
+    rangeMagnitude.setPromptText("Input range (x,y)");
 
     // disables all magnitude filters but chosen one
     // by making a radio button for each filter and adding them in a toggle group where only one
@@ -669,37 +764,37 @@ public class LiveDataMap extends PApplet {
     moreMagnitudeR.setToggleGroup(magToggleGp);
     rangeMagnitudeR.setToggleGroup(magToggleGp);
 
-    lessMagnitude.disableProperty().bind(lessMagnitudeR.selectedProperty());
-    moreMagnitude.disableProperty().bind(moreMagnitudeR.selectedProperty());
-    exactMagnitude.disableProperty().bind(exactMagnitudeR.selectedProperty());
-    rangeMagnitude.disableProperty().bind(rangeMagnitudeR.selectedProperty());
+    lessMagnitude.disableProperty().bind(lessMagnitudeR.selectedProperty().not());
+    moreMagnitude.disableProperty().bind(moreMagnitudeR.selectedProperty().not());
+    exactMagnitude.disableProperty().bind(exactMagnitudeR.selectedProperty().not());
+    rangeMagnitude.disableProperty().bind(rangeMagnitudeR.selectedProperty().not());
 
     // adding radiobutton,label,textfield to grid
     grid.add(exactMagnitudeR,0,0);
-    grid.add(new Label("Exact Filter:"),1,0);
+    grid.add(new Label("Exact Magnitude Filter:"),1,0);
     grid.add(exactMagnitude,2,0);
 
     grid.add(lessMagnitudeR,0,1);
-    grid.add(new Label("Upperlimit Filter:"),1,1);
+    grid.add(new Label("Upperlimit Magnitude Filter:"),1,1);
     grid.add(lessMagnitude,2,1);
 
     grid.add(moreMagnitudeR,0,2);
-    grid.add(new Label("Lowerlimit Filter:"),1,2);
+    grid.add(new Label("Lowerlimit Magnitude Filter:"),1,2);
     grid.add(moreMagnitude,2,2);
 
     grid.add(rangeMagnitudeR,0,3);
-    grid.add(new Label("Range Filter:"),1,3);
+    grid.add(new Label("Range Magnitude Filter:"),1,3);
     grid.add(rangeMagnitude,2,3);
 
     // ====================================== depth filters =====================================
     TextField exactDepth = new TextField(); // input of exact depth filter
-    exactDepth.setPromptText("Input Exact Depth value");
+    exactDepth.setPromptText("Exact value");
     TextField lessDepth = new TextField(); // input of lessDepth Filter
-    lessDepth.setPromptText("Input Upper limit Depth value");
+    lessDepth.setPromptText("Upper limit value");
     TextField moreDepth = new TextField(); // input of moreDepth filter
-    moreDepth.setPromptText("Input lower limit Depth value");
+    moreDepth.setPromptText("lower limit value");
     TextField rangeDepth = new TextField(); // input of range Depth filter
-    rangeDepth.setPromptText("Input range Depth values (x,y)");
+    rangeDepth.setPromptText("range values (x,y)");
 
     // disables all deptth filters but chosen one
     // by making a radio button for each filter and adding them in a toggle group where only one
@@ -718,27 +813,27 @@ public class LiveDataMap extends PApplet {
     moreDepthR.setToggleGroup(depthToggleGp);
     rangeDepthR.setToggleGroup(depthToggleGp);
 
-    lessDepth.disableProperty().bind(lessDepthR.selectedProperty());
-    moreDepth.disableProperty().bind(moreDepthR.selectedProperty());
-    exactDepth.disableProperty().bind(exactDepthR.selectedProperty());
-    rangeDepth.disableProperty().bind(rangeDepthR.selectedProperty());
+    lessDepth.disableProperty().bind(lessDepthR.selectedProperty().not());
+    moreDepth.disableProperty().bind(moreDepthR.selectedProperty().not());
+    exactDepth.disableProperty().bind(exactDepthR.selectedProperty().not());
+    rangeDepth.disableProperty().bind(rangeDepthR.selectedProperty().not());
 
 
     // adding radiobutton,label,textfield to grid
     grid.add(exactDepthR,3,0);
-    grid.add(new Label("Exact Filter:"),4,0);
+    grid.add(new Label("Exact Depth Filter:"),4,0);
     grid.add(exactDepth,5,0);
 
     grid.add(lessDepthR,3,1);
-    grid.add(new Label("Upperlimit Filter:"),4,1);
+    grid.add(new Label("Upperlimit Depth Filter:"),4,1);
     grid.add(lessDepth,5,1);
 
     grid.add(moreDepthR,3,2);
-    grid.add(new Label("Lowerlimit Filter:"),4,2);
+    grid.add(new Label("Lowerlimit Depth Filter:"),4,2);
     grid.add(moreDepth,5,2);
 
     grid.add(rangeDepthR,3,2);
-    grid.add(new Label("Range Filter:"),4,3);
+    grid.add(new Label("Range Depth Filter:"),4,3);
     grid.add(rangeDepth,5,3);
 
 
@@ -764,36 +859,36 @@ public class LiveDataMap extends PApplet {
      try {
        if (dialogButton == filterBtnType) {
          EarthQuakeFilter magnitudeFilter = null, depthFilter = null;
-         if (exactDepthR.isSelected())
+         if (exactDepthR.isSelected() && !exactDepth.getText().isEmpty())
            depthFilter = new EarthQuakesFeedParser.ExactDepthFilter(exactDepth.getText().trim());
 
-         if (lessDepthR.isSelected())
+         if (lessDepthR.isSelected()  && !lessDepth.getText().isEmpty())
            depthFilter = new EarthQuakesFeedParser.DepthLessThanFilter(
                Double.parseDouble(lessDepth.getText().trim()), true);
 
-         if (moreDepthR.isSelected())
+         if (moreDepthR.isSelected() && !moreDepth.getText().isEmpty())
            depthFilter = new EarthQuakesFeedParser.DepthMoreThanFilter(
                Double.parseDouble(moreDepth.getText().trim()), true);
 
-         if (rangeDepthR.isSelected()) {
+         if (rangeDepthR.isSelected() && !rangeDepth.getText().isEmpty()) {
            String[] values = rangeDepth.getText().trim().split(",");
            depthFilter = new EarthQuakesFeedParser.DepthRangeFilter(Double.parseDouble(values[0]),
                true, Double.parseDouble(values[1]), true);
          }
 
-         if (exactMagnitudeR.isSelected())
+         if (exactMagnitudeR.isSelected() && !exactMagnitude.getText().isEmpty())
            magnitudeFilter = new EarthQuakesFeedParser.ExactMagnitudeFilter(
                exactMagnitude.getText().trim());
 
-         if (lessMagnitudeR.isSelected())
+         if (lessMagnitudeR.isSelected() && !lessMagnitude.getText().isEmpty())
            magnitudeFilter = new EarthQuakesFeedParser.MagnitudeLessThanFilter(
                Double.parseDouble(lessMagnitude.getText().trim()), true);
 
-         if (moreMagnitudeR.isSelected())
+         if (moreMagnitudeR.isSelected() && !moreMagnitude.getText().isEmpty())
            magnitudeFilter = new EarthQuakesFeedParser.MagnitudeMoreThanFilter(
                Double.parseDouble(moreMagnitude.getText().trim()), true);
 
-         if (rangeMagnitudeR.isSelected()) {
+         if (rangeMagnitudeR.isSelected() && !rangeMagnitude.getText().isEmpty()) {
            String[] values = rangeMagnitude.getText().trim().split(",");
            magnitudeFilter = new EarthQuakesFeedParser.MagnitudeRangeFilter(
                Double.parseDouble(values[0]), true, Double.parseDouble(values[1]), true);
@@ -802,16 +897,23 @@ public class LiveDataMap extends PApplet {
          return new Pair<>(magnitudeFilter,
              depthFilter); // used Filters and done this way because only one magnitude filter can be chosen and only one depth filter can be chosen due to toggle group
        }
+
      }catch(NumberFormatException ex)
      {
        showAlert(AlertType.ERROR,"Invalid Input, nothing done!",ex.getMessage());
-       return null;
-     }catch(Exception ex)
+     }catch(IllegalArgumentException ex)
      {
-       showAlert(AlertType.ERROR,"Unexpected Error","Please Contact the Main programmer",ex);
-      return null;
+       showAlert(AlertType.ERROR,"Invalid input, Numeric input only",ex.getMessage());
      }
-      return null;
+     catch(ArrayIndexOutOfBoundsException ex)
+     {
+       showAlert(AlertType.ERROR,"Invalid input ","Invalid input format (numeric input only, and if range > ex: 2.5,5.0)");
+     }
+     catch(Exception ex)
+     {
+       showAlert(AlertType.ERROR,"Unexpected Error","Please Contact Hisham Maged",ex);
+     }
+    return null;
     });
     // return the result in form of optional
     Optional<Pair<EarthQuakeFilter,EarthQuakeFilter>> result = dialog.showAndWait();
@@ -821,11 +923,36 @@ public class LiveDataMap extends PApplet {
         new EarthQuakeFilter[]{result.get().getKey(),result.get().getValue()} :
         null;
   }
+
+  /*
+  * A private helper method to do filterOption in operations Map
+  * */
+  private void filterOperation()
+  {
+    if(!isEarthQuakeSelected())
+    {
+      showAlert(AlertType.ERROR,"Un supported operation","You can't filter life expectancy data with magnitude, depth, choose EarthQuake Map first");
+      return;
+    }
+    // no conditional expression on 2nd parameter as made sure from if condition that it's earthquake map
+    changeData(EarthQuakesMarkerHandler.lastMadeEntries,this.usedMap,getFilterDialog());
+
+  }
+
+  /*
+  * A private boolean helper method that returns true if an earthquake map is selected, used for GUI Interactions
+  * */
+  private boolean isEarthQuakeSelected()
+  {
+    return this.usedMap == Map.DEPTH_EARTHQUAKES || this.usedMap == Map.MAGNITUDE_EARTHQUAKES;
+  }
+
   /*
   * Key pressed functionality that changes between the earthquake map and life expectancy map
   * using final char MAGNITUDE_EARTHQUAKES_KEY for magnitude earthquake data
   * using final char DEPTH_EARTHQUAKES_KEY for depth earthquake data
   * using final char LIFE_EXPECTANCY_KEY for life expectancy data
+  * zooms in map and out of it using ZOOM_IN_KEY and ZOOM_OUT_KEY at the mouse location
   * */
   public void keyPressed()
   {
@@ -847,10 +974,10 @@ public class LiveDataMap extends PApplet {
         break;
 
       case ZOOM_IN_KEY:
-        this.map.zoomLevelIn();
+        this.map.zoomAndPanTo(this.map.getZoomLevel()+1,map.getLocation(mouseX,mouseY));
         break;
       case ZOOM_OUT_KEY:
-        this.map.zoomLevelOut();
+        this.map.zoomAndPanTo(this.map.getZoomLevel()-1,map.getLocation(mouseX,mouseY));
         break;
     }
   }
@@ -880,6 +1007,14 @@ public class LiveDataMap extends PApplet {
     }
   }
 
+  /*
+  * Applies the panning restriction pased on zoom level if zoom increased than level 3
+  * */
+  private void setRestriction()
+  {
+    if(this.map.getZoomLevel()>3)
+    this.map.setPanningRestriction(this.map.getCenter(),(2*width)/2F);
+  }
 
 
 
