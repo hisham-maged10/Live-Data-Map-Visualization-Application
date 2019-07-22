@@ -1,16 +1,11 @@
-package View;
+package view;
 /*
   Author: Hisham Maged
   Date : 7/11/2019
   Project Name : A Map with visualized live data
 */
 
-import Controller.EarthQuakesFeedParser;
-import Controller.EarthQuakesFeedParser.EarthQuakeFilter;
-import Controller.EarthQuakesMarkerHandler;
-import Controller.EarthQuakesMarkerHandler.EarthQuakeMarker;
-import Controller.LifeExpectancyMarkerHandler;
-import Model.EarthQuakeEntry;
+import model.pojo.EarthQuakeEntry;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.Marker;
@@ -96,39 +91,7 @@ public class LiveDataMap extends PApplet {
   private final static URL LIVE_EARTHQUAKE_DATA_PAST_DAY = makeURL(LIVE_EARTHQUAKE_DATA_PAST_DAY_STRING);
   private final static URL LIVE_EARTHQUAKE_DATA_PAST_HOUR = makeURL(LIVE_EARTHQUAKE_DATA_PAST_HOUR_STRING);
 
-  /*
-  * Light earthQuake value : 4.0
-  * moderate earthQuake Value : 4.0 - 5.0
-  * intense earthquake value : 10.0
-  * */
-  private static final double LIGHT_EARTHQUAKE = 4.0;
-  private static final double MODERATE_EARTHQUAKE = 5.0;
-  private static final double INTENSE_EARTHQUAKE = 10.0;
 
-  /*
-  * Light Depth value : 0-50
-  * Moderate Depth Value: 50-200
-  * Intense : 200+
-  * */
-  private static final double LIGHT_DEPTH = 0.0;
-  private static final double MODERATE_DEPTH = 50.0;
-  private static final double INTENSE_DEPTH = 300.0;
-
-  /*
-  * Colors for makres of light,moderate,intense magnitude earthquake markers
-  * not static because color method can't be invoked in static context
-  * */
-  private final int LIGHT_EARTHQUAKE_COLOR = color(6,175,194,100);
-  private final int MODERATE_EARTHQUAKE_COLOR = color(251,255,0,130);
-  private final int INTENSE_EARTHQUAKE_COLOR = color(191,34,40,150);
-
-  /*
-   * Colors for makres of light,moderate,intense depth earthquake markers
-   * not static because color method can't be invoked in static context
-   * */
-  private final int LIGHT_DEPTH_COLOR = color(242,255,56,130);
-  private final int MODERATE_DEPTH_COLOR = color(214,71,24,100);
-  private final int INTENSE_DEPTH_COLOR = color(148,28,32,200);
 
 
   /*

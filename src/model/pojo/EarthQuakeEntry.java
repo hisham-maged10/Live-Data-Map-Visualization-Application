@@ -1,14 +1,13 @@
-package Model;/*
+package model.pojo;/*
   Author: Hisham Maged
   Date : 7/11/2019
-  Project Name : An Entry representation of RSS Feed (Pojo)
+  Project Name : An Entry representation of RSS Feed of earthquakes from UCSG (Pojo)
 */
 
 import de.fhpotsdam.unfolding.geo.Location;
-import java.math.BigDecimal;
-import java.math.MathContext;
+import java.math.BigDecimal;;
 
-public class EarthQuakeEntry implements Comparable<EarthQuakeEntry>{
+public class EarthQuakeEntry implements DataEntry,Comparable<EarthQuakeEntry>{
 
   private final Location loc;// immutable location field
   private final double magnitude;// immutable magnitude
@@ -27,7 +26,7 @@ public class EarthQuakeEntry implements Comparable<EarthQuakeEntry>{
   * age
   * and Locations, split into latitude, longitude, Location object is made with them
   * */
-  public EarthQuakeEntry(String id, String info,String locationPoints, String elevation,String age)
+  public EarthQuakeEntry(String info,String locationPoints, String elevation,String age)
   {
     this.title = info;
     String[] titleItems = info.split("\\s-\\s");

@@ -1,4 +1,4 @@
-package Model;/*
+package model.pojo;/*
   Author: Hisham Maged
   Date : 7/12/2019
   Project Name : A Pojo object for holding each of the Life Expectancy Records in the being parsed CSV file
@@ -7,7 +7,7 @@ package Model;/*
 import java.util.Collections;
 import java.util.Map;
 
-public class LifeExpectancyRecord implements Comparable<LifeExpectancyRecord>{
+public class LifeExpectancyEntry implements DataEntry, WorldData, Comparable<LifeExpectancyEntry>{
 
   private final String countryName; // private immutable (final for added security and readablity) country Name in record
   private final String countryCode; // private immutable (final for added security and readablity) country code in record
@@ -17,7 +17,7 @@ public class LifeExpectancyRecord implements Comparable<LifeExpectancyRecord>{
   * only constructor version and yearLifeExpectancy is immutable as given in feedParser as annonymous object
   * so can't get hold of it and change it using reference sharing
   * */
-  public LifeExpectancyRecord(String countryName,String countryCode,Map<Integer,Float> yearLifeExpectancyMap)
+  public LifeExpectancyEntry(String countryName,String countryCode,Map<Integer,Float> yearLifeExpectancyMap)
   {
     this.countryName = countryName;
     this.countryCode = countryCode;
@@ -36,9 +36,10 @@ public class LifeExpectancyRecord implements Comparable<LifeExpectancyRecord>{
     return this.countryName;
   }
 
-  // getter for map as unmodefiable so can't be changed by reference sharing and it holds year and life expectancy values for
-  // current record, could be used for something ( unused for now )
-  public Map<Integer,Float> getYearExpectancyMap()
+  /* getter for map as unmodefiable so can't be changed by reference sharing and it holds year and life expectancy values for
+   current record, could be used for something ( unused for now )
+  */
+  public Map<Integer,Float> getMap()
   {
     return Collections.unmodifiableMap(this.yearLifeExpectancyMap);
   }
@@ -47,7 +48,7 @@ public class LifeExpectancyRecord implements Comparable<LifeExpectancyRecord>{
   * @Param int year that is a year to return respected life expectancy value for it
   * if year not between 1960 and 2017, Illegal ArgumentException will be thrown
   * */
-  public Float getCertainYearExpectancy(int year)
+  public Float getCertainYearValue(int year)
   {
     if(year < 1960 || year >2017)
       throw new IllegalArgumentException("year must range from 1960 to 2017 inclusive");
@@ -63,9 +64,9 @@ public class LifeExpectancyRecord implements Comparable<LifeExpectancyRecord>{
   {
     if( this == o )
         return true;
-    if(o == null || o.getClass() != LifeExpectancyRecord.class)
+    if(o == null || o.getClass() != LifeExpectancyEntry.class)
       return false;
-    LifeExpectancyRecord anotherRecord = (LifeExpectancyRecord) o;
+    LifeExpectancyEntry anotherRecord = (LifeExpectancyEntry) o;
     return this.countryCode.equalsIgnoreCase(anotherRecord.getCountryCode());
   }
   /*
@@ -87,11 +88,11 @@ public class LifeExpectancyRecord implements Comparable<LifeExpectancyRecord>{
   * matches equals method for sorted hashed structures
   * doesn't accept null
   * @NotNullable
-  * @Param another LifeExpectancyRecord to be compared
+  * @Param another LifeExpectancyEntry to be compared
   * uses Immutable values same as hashcode and equals
   * */
   @Override
-  public int compareTo(LifeExpectancyRecord anotherRecord)
+  public int compareTo(LifeExpectancyEntry anotherRecord)
   {
     if(this == anotherRecord)
       return 0;
