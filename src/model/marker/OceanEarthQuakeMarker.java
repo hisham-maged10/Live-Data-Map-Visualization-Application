@@ -28,7 +28,7 @@ public class OceanEarthQuakeMarker extends AbstractEarthQuakeMarker {
   @Override
   public void drawMarker(PGraphics pg, float x, float y)
   {
-    //TODO: implement custom shape
+    pg.ellipse(x,y,this.radius*2,this.radius*2);
   }
 
 

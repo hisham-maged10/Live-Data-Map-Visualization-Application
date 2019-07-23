@@ -14,11 +14,13 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
 
   // shows whether the earthquake marker is on land or on ocean
   private boolean onLand;
-
+  private float tempRadius; // used if age is past day to make animation
+  private boolean pastDay = false;
   /*
    * Light earthQuake value : 4.0
    * moderate earthQuake Value : 4.0 - 5.0
    * intense earthquake value : 10.0
+   * made for usage if u want
    * */
   private static final double LIGHT_EARTHQUAKE = 4.0;
   private static final double MODERATE_EARTHQUAKE = 5.0;
@@ -30,12 +32,12 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
    * Intense : 200+
    * */
   private static final double LIGHT_DEPTH = 0.0;
-  private static final double MODERATE_DEPTH = 50.0;
+  private static final double MODERATE_DEPTH = 70.0;
   private static final double INTENSE_DEPTH = 300.0;
 
   /*
    * Colors for makres of light,moderate,intense magnitude earthquake markers
-   * not static because color method can't be invoked in static context
+   * sets the earthquake marker color based on depth
    * */
   private final static int LIGHT_EARTHQUAKE_COLOR;
   private final static int MODERATE_EARTHQUAKE_COLOR;
@@ -43,7 +45,7 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
 
   /*
    * Colors for makres of light,moderate,intense depth earthquake markers
-   * not static because color method can't be invoked in static context
+   * made for usage if u want
    * */
   private final static int LIGHT_DEPTH_COLOR;
   private final static int MODERATE_DEPTH_COLOR;
@@ -79,12 +81,15 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     HashMap<String,Object> props = feature.getProperties();
     // gets magnitude that is stored as object in map and converts it to string using the actual type toString
     // parsing it into a float
-    float magnitude = Float.parseFloat(props.get("Magnitude").toString());
+    float magnitude = Float.parseFloat(props.get("magnitude").toString());
     props.put("radius",2*magnitude); // putting radius property to the properties of the feature
     //setting the properties of the marker with the added radius properties
     this.setProperties(props);
     // setting value of radius of this marker based on magnitude
-    this.radius = 1.75F*magnitude;
+    this.radius = 2F*magnitude;
+    this.tempRadius = radius;
+    if(props.get("age").toString().equalsIgnoreCase("past day"))
+      this.pastDay = true;
 
   }
   /*
@@ -99,10 +104,11 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   @Override
   public void draw(PGraphics pg, float x, float y)
   {
-    pg.pushStyle();
-    determineColor(pg);
-    this.drawMarker(pg,x,y);
-    pg.popStyle();
+    pg.pushStyle(); //saves previous style
+    determineColor(pg); //determines the color based on magnitude
+    if(this.pastDay){changeRadius();} //makes the animation if earthquake is of past day
+    this.drawMarker(pg,x,y); // draws the specified marker look
+    pg.popStyle(); // reset to previous styling of whole current applet
   }
   // getter for magnitude as float for this earthquake marker
   public float getMagnitude()
@@ -124,6 +130,8 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   {
     return Float.parseFloat(getStringProperty("radius"));
   }
+  // getter for age as String for this earthquake Marker
+  public String getAge(){ return getStringProperty("age");}
   // returns whether the marker is on land or ocean
   public boolean isOnLand()
   {
@@ -134,7 +142,19 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   * */
   private void determineColor(PGraphics pg)
   {
-    //TODO: implement it
+    float depth = this.getDepth();
+    if(depth >= MODERATE_DEPTH && depth < INTENSE_DEPTH)
+    {
+      pg.strokeWeight(5);
+      pg.stroke(MODERATE_EARTHQUAKE_COLOR);
+    }else if(depth > LIGHT_DEPTH && depth < MODERATE_DEPTH)
+    {
+      pg.strokeWeight(4);
+      pg.stroke(LIGHT_EARTHQUAKE_COLOR);
+    }else{
+      pg.strokeWeight(10);
+      pg.stroke(INTENSE_EARTHQUAKE_COLOR);
+    }
   }
 
   public void setOnLand(boolean onLand)
@@ -142,4 +162,11 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     this.onLand = onLand;
   }
 
+  private void changeRadius()
+  {
+    if((int)tempRadius == (int)this.radius)
+      this.radius = 0;
+    else
+      ++this.radius;
+  }
 }

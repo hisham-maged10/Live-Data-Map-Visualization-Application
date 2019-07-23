@@ -12,6 +12,7 @@ import processing.core.PGraphics;
 
 public abstract class AbstractLocationMarker extends SimplePointMarker implements CustomizedMarker{
 
+
   /*
   * Location constructor that makes initializes the simplePointMarker implementation using
   * super constructor

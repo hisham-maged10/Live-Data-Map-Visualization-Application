@@ -6,16 +6,23 @@ package model.marker;/*
 
 import de.fhpotsdam.unfolding.data.Feature;
 import de.fhpotsdam.unfolding.geo.Location;
+import processing.core.PConstants;
 import processing.core.PGraphics;
+import processing.core.PImage;
 
 public class CityMarker extends AbstractLocationMarker {
 
-  public CityMarker(Location location) {
+  private PImage img; //holds the image of the marker that will represent the location
+
+
+  public CityMarker(Location location,PImage img) {
     super(location);
+    this.img = img;
   }
 
-  public CityMarker(Feature place) {
+  public CityMarker(Feature place,PImage img) {
     super(place);
+    this.img = img;
   }
 
   /*
@@ -24,7 +31,8 @@ public class CityMarker extends AbstractLocationMarker {
   @Override
   public void drawMarker(PGraphics pg, float x, float y)
   {
-    // TODO: implement drawing technique
+    pg.imageMode(PConstants.CORNER);
+    pg.image(img,x-11,y-37);
   }
 
   // get city name of city Marker

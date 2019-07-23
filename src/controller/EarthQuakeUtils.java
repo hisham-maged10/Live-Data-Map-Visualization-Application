@@ -17,8 +17,6 @@ import java.util.function.Predicate;
 
 public class EarthQuakeUtils {
 
-  // holds unmodefiable list of latest PointFeature Made
-  public static List<PointFeature> lastMadeEntries = Collections.EMPTY_LIST; //unmodefiable
 
 
 
@@ -380,27 +378,27 @@ public class EarthQuakeUtils {
     return parsedFeatures;
   }
 
-  /*
-   *  a static method to make EarthQuake Markers given a List<PointFeature>,
-   *  that will be used to make a marker per each using the Location of it and its properties
-   *  @Param: List<PointFeature> a list containing the PointFeatures of each pojo object of earthquake entry can be made by static method
-   *  toPointFeature of this class
-   * */
-
-  public List<Marker> makeEarthQuakeMarkers(List<PointFeature> features)
-  {
-    List<Marker> markers = new ArrayList<>();
-    SimplePointMarker tempMarker = null; // to hold reference to the newly added marker
-    for(PointFeature pf : features) {
-      markers.add((tempMarker = new SimplePointMarker()));
-      tempMarker.setLocation(pf.getLocation());
-      tempMarker.setProperties(pf.getProperties());
-    }
-
-    lastMadeEntries = Collections.unmodifiableList(features);
-
-    return markers;
-  }
+//  /*
+//   *  a static method to make EarthQuake Markers given a List<PointFeature>,
+//   *  that will be used to make a marker per each using the Location of it and its properties
+//   *  @Param: List<PointFeature> a list containing the PointFeatures of each pojo object of earthquake entry can be made by static method
+//   *  toPointFeature of this class
+//   * */
+//
+//  public List<Marker> makeEarthQuakeMarkers(List<PointFeature> features)
+//  {
+//    List<Marker> markers = new ArrayList<>();
+//    SimplePointMarker tempMarker = null; // to hold reference to the newly added marker
+//    for(PointFeature pf : features) {
+//      markers.add((tempMarker = new SimplePointMarker()));
+//      tempMarker.setLocation(pf.getLocation());
+//      tempMarker.setProperties(pf.getProperties());
+//    }
+//
+//    lastMadeEarthQuakesMarkers = Collections.unmodifiableList(features);
+//
+//    return markers;
+//  }
 
   /*
   * //TODO: right desc
@@ -408,23 +406,6 @@ public class EarthQuakeUtils {
   public static void printQuakes()
   {
     //TODO: implement it
-  }
-  /*
-  * //TODO: right desc
-  * */
-  public static boolean isLand(PointFeature earthquake)
-  {
-    //TODO: implement it
-    return false;
-  }
-
-  /*
-  * //TODO: write description
-  * */
-  public static boolean isInCountry(PointFeature earthquake, Marker country)
-  {
-    //TODO: implement it
-    return false;
   }
 
 }

@@ -28,7 +28,7 @@ public class LandEarthQuakeMarker extends AbstractEarthQuakeMarker{
   @Override
   public void drawMarker(PGraphics pg, float x, float y)
   {
-    //TODO: implement custom shape
+    pg.rect(x,y,this.radius*2,this.radius*2);
   }
 
   // get the country that the earthquake is in

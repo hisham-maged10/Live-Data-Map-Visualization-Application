@@ -5,11 +5,13 @@ package view;
   Project Name : A Map with visualized live data
 */
 
-import model.pojo.EarthQuakeEntry;
+import controller.DataUtils;
+import controller.EarthQuakeUtils;
+import controller.EarthQuakeUtils.EarthQuakeFilter;
+import controller.WorldDataUtils;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.Marker;
-import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 import de.fhpotsdam.unfolding.providers.AbstractMapProvider;
 import de.fhpotsdam.unfolding.providers.Microsoft;
 import de.fhpotsdam.unfolding.utils.MapUtils;
@@ -52,14 +54,18 @@ public class LiveDataMap extends PApplet {
 
   /* private ENUM made to choose a map (in case of earthquakes, to choose a coloring sequence)*/
   private enum Map{
-    MAGNITUDE_EARTHQUAKES,DEPTH_EARTHQUAKES,LIFEEXPECTANCY;
+    EARTHQUAKES,LIFEEXPECTANCY;
+  }
+
+  private enum LiveDatachoice{
+    LAST_DAY,LAST_HOUR,LAST_WEEK,LAST_MONTH;
   }
   // Used Map reference
   private UnfoldingMap map;
   // Earth quakes map (same for any earthquake property, as same data but different coloring)
   private UnfoldingMap earthQuakesMap;
   // used earthQuakesMarkers reference (same for any earthquake property, as same data but different coloring)
-  private List<SimplePointMarker> earthQuakesMarkers;
+  private List<Marker> earthQuakesMarkers;
   // used lifeExpectancyMarkers reference
   private List<Marker> lifeExpectancyMarkers;
   //LifeExpectancy Map reference
@@ -67,29 +73,6 @@ public class LiveDataMap extends PApplet {
 
   // private List<ScreenPosition> holding the markers of earthquake magnitudes to be customized in draw
   private List<ScreenPosition> magnitudeScreenPositions;
-
-  /*
-  * String URLS for live earth quake data
-  * past 30 days
-  * past 7 days
-  * past day
-  * past hour
-  * */
-  private static final String LIVE_EARTHQUAKE_DATA_PAST_30_DAYS_STRING = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.atom";
-  private static final String LIVE_EARTHQUAKE_DATA_PAST_7_DAYS_STRING = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.atom";
-  private static final String LIVE_EARTHQUAKE_DATA_PAST_DAY_STRING = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.atom";
-  private static final String LIVE_EARTHQUAKE_DATA_PAST_HOUR_STRING = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.atom";
-  /*
-   * URLS for live earth quake data
-   * past 30 days
-   * past 7 days
-   * past day
-   * past hour
-   * */
-  private final static URL LIVE_EARTHQUAKE_DATA_PAST_30_DAYS = makeURL(LIVE_EARTHQUAKE_DATA_PAST_30_DAYS_STRING);
-  private final static URL LIVE_EARTHQUAKE_DATA_PAST_7_DAYS = makeURL(LIVE_EARTHQUAKE_DATA_PAST_7_DAYS_STRING);
-  private final static URL LIVE_EARTHQUAKE_DATA_PAST_DAY = makeURL(LIVE_EARTHQUAKE_DATA_PAST_DAY_STRING);
-  private final static URL LIVE_EARTHQUAKE_DATA_PAST_HOUR = makeURL(LIVE_EARTHQUAKE_DATA_PAST_HOUR_STRING);
 
 
 
@@ -115,10 +98,10 @@ public class LiveDataMap extends PApplet {
   private static final char ZOOM_OUT_KEY = '-';
 
   // first opened map is set to Map.Magnitude_EarthQuakes by default
-  private Map usedMap = Map.MAGNITUDE_EARTHQUAKES;
+  private Map usedMap = Map.EARTHQUAKES;
 
   // default map selection in case of changing data set and another Map rather than earthquakes is chosen, used in GUI
-  private static final Map DEFAULT_EARTHQUAKE_MAP_CHOICE = Map.MAGNITUDE_EARTHQUAKES;
+  private static final Map DEFAULT_EARTHQUAKE_MAP_CHOICE = Map.EARTHQUAKES;
 
 
   // default provider of map
@@ -140,6 +123,7 @@ public class LiveDataMap extends PApplet {
   {
     size(displayWidth,displayHeight-100,FX2D); // -100 so not to fill the whole screen
     smooth(8); // anti-allising x8 (remove if program is slow)
+    WorldDataUtils.useApplet(this); // essential for the whole WorldDataUtils to work, if not done will throw unsupportedOperation exception on all operations
     initMap();
   }
 
@@ -185,12 +169,10 @@ public class LiveDataMap extends PApplet {
     Menu mapSelectionMenu = new Menu("Maps"); // making the Map Selection Menu
     Menu earthQuakeMap = new Menu("Earthquakes"); // earthquake coloring logic selection
     MenuItem magnitudeEarthQuakes = new MenuItem("Magnitude"); // magnitude map
-    MenuItem depthEarthQuakes = new MenuItem("Depth"); // depth map
-    earthQuakeMap.getItems().addAll(magnitudeEarthQuakes,depthEarthQuakes);
+    earthQuakeMap.getItems().addAll(magnitudeEarthQuakes);
     MenuItem lifeExpectancyMap = new MenuItem("Life Expectancy"); // lifeExpectancyMap
 
-    magnitudeEarthQuakes.setOnAction(e -> swapMap(Map.MAGNITUDE_EARTHQUAKES));
-    depthEarthQuakes.setOnAction(e -> swapMap(Map.DEPTH_EARTHQUAKES));
+    magnitudeEarthQuakes.setOnAction(e -> swapMap(Map.EARTHQUAKES));
     lifeExpectancyMap.setOnAction(e -> swapMap(Map.LIFEEXPECTANCY));
 
 
@@ -209,24 +191,24 @@ public class LiveDataMap extends PApplet {
     // else puts the used map as it could be any earthquake type map so doesn't change the marker coloring
     // confirms if the user want to filter the dataset using confirmFiltering, if so a filter dialog opens to get filters input
     lastHour.setOnAction( e-> {if(confirmFiltering())
-      changeData(LIVE_EARTHQUAKE_DATA_PAST_HOUR,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
+      changeData(LiveDatachoice.LAST_HOUR,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
       else
-      changeData(LIVE_EARTHQUAKE_DATA_PAST_HOUR,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
+      changeData(LiveDatachoice.LAST_HOUR,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
 
     lastDay.setOnAction( e-> {if(confirmFiltering())
-      changeData(LIVE_EARTHQUAKE_DATA_PAST_DAY,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
+      changeData(LiveDatachoice.LAST_DAY,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
     else
-      changeData(LIVE_EARTHQUAKE_DATA_PAST_DAY,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
+      changeData(LiveDatachoice.LAST_DAY,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
 
     lastWeek.setOnAction( e-> {if(confirmFiltering())
-      changeData(LIVE_EARTHQUAKE_DATA_PAST_7_DAYS,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
+      changeData(LiveDatachoice.LAST_WEEK,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
     else
-      changeData(LIVE_EARTHQUAKE_DATA_PAST_7_DAYS,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
+      changeData(LiveDatachoice.LAST_WEEK,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
 
     lastMonth.setOnAction( e-> {if(confirmFiltering())
-      changeData(LIVE_EARTHQUAKE_DATA_PAST_30_DAYS,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
+      changeData(LiveDatachoice.LAST_MONTH,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap,getFilterDialog()); // for added filters functionality
     else
-      changeData(LIVE_EARTHQUAKE_DATA_PAST_30_DAYS,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
+      changeData(LiveDatachoice.LAST_MONTH,this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE: this.usedMap);});
 
 
     // given a Stage because FileChooser of fx needs a stage to be opened from.
@@ -296,7 +278,6 @@ public class LiveDataMap extends PApplet {
   {
     background(30);
     this.map.draw();
-    makeScreenPositions();
     writeLocation();
     addLegend();
     setRestriction();
@@ -328,8 +309,7 @@ public class LiveDataMap extends PApplet {
     * File >> Atom file object
     * URL >> live data url
     * */
-    this.earthQuakesMarkers = EarthQuakesMarkerHandler
-        .makeEarthQuakeMarkers("./data/2.5_week.atom");
+    this.earthQuakesMarkers = DataUtils.makeLocalEarthQuakesMarkers("./data/2.5_week.atom");
 
     this.earthQuakesMap.zoomToLevel(3);
     this.earthQuakesMap.setZoomRange(3,20);
@@ -347,7 +327,7 @@ public class LiveDataMap extends PApplet {
      * File >> CSV file object
      * URL >> live data url
      * */
-    this.lifeExpectancyMarkers = LifeExpectancyMarkerHandler.makeLifeExpectancyMarkers(this,"./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
+    this.lifeExpectancyMarkers = DataUtils.makeLocalLifeExpectancyMarkers("./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
     this.lifeExpectancyMap.addMarkers(this.lifeExpectancyMarkers);
     this.lifeExpectancyMap.zoomToLevel(3);
     this.lifeExpectancyMap.setZoomRange(3,20);
@@ -356,26 +336,6 @@ public class LiveDataMap extends PApplet {
     this.map = this.earthQuakesMap;
   }
 
-  /*
-   * Private helper method that adds customized screen positions instead of markers for earthquake magnitude or depth data
-   * using the map enum and static method of EarthQuakesMarkerHandler showMarkers() using Marker enum
-   * note, what changes is the coloring only as the data of depth and magnitude is the same earthquake data
-   *  */
-  private void makeScreenPositions()
-  {
-    switch(this.usedMap)
-    {
-      case MAGNITUDE_EARTHQUAKES:
-        EarthQuakesMarkerHandler.showMarkers(this,this.earthQuakesMap,this.earthQuakesMarkers,
-            EarthQuakeMarker.MAGNITUDE,LIGHT_EARTHQUAKE,MODERATE_EARTHQUAKE,INTENSE_EARTHQUAKE,LIGHT_EARTHQUAKE_COLOR,MODERATE_EARTHQUAKE_COLOR,INTENSE_EARTHQUAKE_COLOR);
-        break;
-      case DEPTH_EARTHQUAKES:
-
-        EarthQuakesMarkerHandler.showMarkers(this,this.earthQuakesMap,this.earthQuakesMarkers,
-            EarthQuakeMarker.DEPTH,LIGHT_DEPTH,MODERATE_DEPTH,INTENSE_DEPTH,LIGHT_DEPTH_COLOR,MODERATE_DEPTH_COLOR,INTENSE_DEPTH_COLOR);
-        break;
-    }
-  }
 
   /*
   * depending on Map Enum of selected Map "usedMap" private field
@@ -395,30 +355,18 @@ public class LiveDataMap extends PApplet {
     fill(color(0));
     switch(this.usedMap)
     {
-      case MAGNITUDE_EARTHQUAKES:
+      case EARTHQUAKES:
         text("Legend",65,height-350+75);
-        text(MODERATE_EARTHQUAKE+" + Magnitude",60,height-350+120);
-        text(LIGHT_EARTHQUAKE+" + Magnitude",60,height-350+170);
-        text("Below "+LIGHT_EARTHQUAKE,60,height-350+220);
-        fill(INTENSE_EARTHQUAKE_COLOR);
+        text(" + Magnitude",60,height-350+120);
+        text("4.0 + Magnitude",60,height-350+170);
+        text("Below 4.0",60,height-350+220);
+        fill(255,0,0);
         ellipse(45,height-350+115,18,18);
-        fill(MODERATE_EARTHQUAKE_COLOR);
+        fill(255,255,0);
         ellipse(45,height-350+165,15,15);
-        fill(LIGHT_EARTHQUAKE_COLOR);
+        fill(0,0,255);
         ellipse(45,height-350+215,12,12);
         break;
-      case DEPTH_EARTHQUAKES:
-        text("Legend",65,height-350+75);
-        text(INTENSE_DEPTH+" + Depth",60,height-350+120);
-        text(MODERATE_DEPTH+" + Depth",60,height-350+170);
-        text("Below "+MODERATE_DEPTH,60,height-350+220);
-        fill(INTENSE_DEPTH_COLOR);
-        ellipse(45,height-350+115,18,18);
-        fill(MODERATE_DEPTH_COLOR);
-        ellipse(45,height-350+165,15,15);
-        fill(LIGHT_DEPTH_COLOR);
-        ellipse(45,height-350+215,12,12);
-                      break;
       case LIFEEXPECTANCY:
         text("Life Expectancy",50,height-350+75);
         text("Low shade",60,height-350+210);
@@ -441,12 +389,8 @@ public class LiveDataMap extends PApplet {
   {
     switch(map)
     {
-      case MAGNITUDE_EARTHQUAKES:
-        this.usedMap = Map.MAGNITUDE_EARTHQUAKES;
-        this.map = this.earthQuakesMap;
-        break;
-      case DEPTH_EARTHQUAKES:
-        this.usedMap = Map.DEPTH_EARTHQUAKES;
+      case EARTHQUAKES:
+        this.usedMap = Map.EARTHQUAKES;
         this.map = this.earthQuakesMap;
         break;
       case LIFEEXPECTANCY:
@@ -484,18 +428,23 @@ public class LiveDataMap extends PApplet {
   * @Param: map enum to choose Map gonna be changed to
   * @Param: filter vararg to use in case filters are chosen
   * */
-  private void changeData(URL url, Map map, EarthQuakeFilter... filters)
+  private void changeData(LiveDatachoice choice, Map map, EarthQuakeFilter... filters)
   {
     try {
       switch (map) {
-        // same markers, same case
-        case MAGNITUDE_EARTHQUAKES:
-        case DEPTH_EARTHQUAKES:
-          this.earthQuakesMarkers = EarthQuakesMarkerHandler.makeEarthQuakeMarkers(url,filters);
+        case EARTHQUAKES:
+          switch(choice)
+          {
+            case LAST_DAY:this.earthQuakesMarkers = DataUtils.makeLastDayEarthQuakesMarkers(filters);break;
+            case LAST_HOUR:this.earthQuakesMarkers = DataUtils.makeLastHourEarthQuakesMarkers(filters);break;
+            case LAST_MONTH:this.earthQuakesMarkers = DataUtils.makeLastMonthEarthQuakesMarkers(filters);break;
+            case LAST_WEEK:this.earthQuakesMarkers = DataUtils.makeLastWeekEarthQuakesMarkers(filters);break;
+          }
+          ;
           break;
         case LIFEEXPECTANCY:
-          this.lifeExpectancyMarkers = LifeExpectancyMarkerHandler
-              .makeLifeExpectancyMarkers(this, url, LIFE_EXPECTANCY_YEAR);
+//          this.lifeExpectancyMarkers = DataUtils //TODO: figure it out
+//              .makeLiveLifeExpectancyMarkers(url, LIFE_EXPECTANCY_YEAR);
           break;
       }
       swapMap(map);
@@ -522,12 +471,11 @@ public class LiveDataMap extends PApplet {
       switch(map)
       {
         // same markers, same case
-        case MAGNITUDE_EARTHQUAKES:
-        case DEPTH_EARTHQUAKES:
-          this.earthQuakesMarkers = EarthQuakesMarkerHandler.makeEarthQuakeMarkers(filters);
+        case EARTHQUAKES:
+          this.earthQuakesMarkers = DataUtils.makeLocalEarthQuakesMarkers(filters);
           break;
         case LIFEEXPECTANCY:
-          this.lifeExpectancyMarkers = LifeExpectancyMarkerHandler.makeLifeExpectancyMarkers(this,"./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
+          this.lifeExpectancyMarkers = DataUtils.makeLocalLifeExpectancyMarkers("./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
           break;
       }
       swapMap(map);
@@ -553,12 +501,11 @@ public class LiveDataMap extends PApplet {
     switch(map)
     {
       // same markers, same case
-      case MAGNITUDE_EARTHQUAKES:
-      case DEPTH_EARTHQUAKES:
-        this.earthQuakesMarkers = EarthQuakesMarkerHandler.makeEarthQuakeMarkers(stage,filters);
+      case EARTHQUAKES:
+        this.earthQuakesMarkers = DataUtils.makeLocalEarthQuakesMarkers(stage,filters);
         break;
       case LIFEEXPECTANCY:
-        this.lifeExpectancyMarkers = LifeExpectancyMarkerHandler.makeLifeExpectancyMarkers(this,"./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
+        this.lifeExpectancyMarkers = DataUtils.makeLocalLifeExpectancyMarkers("./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
         break;
     }
     swapMap(map);
@@ -578,18 +525,17 @@ public class LiveDataMap extends PApplet {
    * @Param: map enum to choose Map gonna be changed to
    * @Param: filter vararg to use in case filters are chosen
    * * */
-  private void changeData(List<EarthQuakeEntry> entries,Map map, EarthQuakeFilter... filters)
+  private void changeData(List<Marker> markers,Map map, EarthQuakeFilter... filters)
   {
     try{
       switch(map)
       {
         // same markers, same case
-        case MAGNITUDE_EARTHQUAKES:
-        case DEPTH_EARTHQUAKES:
-          this.earthQuakesMarkers = EarthQuakesMarkerHandler.makeEarthQuakeMarkers(entries,filters);
+        case EARTHQUAKES:
+          this.earthQuakesMarkers = markers;
           break;
         case LIFEEXPECTANCY:
-          this.lifeExpectancyMarkers = LifeExpectancyMarkerHandler.makeLifeExpectancyMarkers(this,"./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
+          this.lifeExpectancyMarkers = DataUtils.makeLocalLifeExpectancyMarkers("./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",LIFE_EXPECTANCY_YEAR);
           break;
       }
       swapMap(map);
@@ -823,37 +769,37 @@ public class LiveDataMap extends PApplet {
        if (dialogButton == filterBtnType) {
          EarthQuakeFilter magnitudeFilter = null, depthFilter = null;
          if (exactDepthR.isSelected() && !exactDepth.getText().isEmpty())
-           depthFilter = new EarthQuakesFeedParser.ExactDepthFilter(exactDepth.getText().trim());
+           depthFilter = new EarthQuakeUtils.ExactDepthFilter(exactDepth.getText().trim());
 
          if (lessDepthR.isSelected()  && !lessDepth.getText().isEmpty())
-           depthFilter = new EarthQuakesFeedParser.DepthLessThanFilter(
+           depthFilter = new EarthQuakeUtils.DepthLessThanFilter(
                Double.parseDouble(lessDepth.getText().trim()), true);
 
          if (moreDepthR.isSelected() && !moreDepth.getText().isEmpty())
-           depthFilter = new EarthQuakesFeedParser.DepthMoreThanFilter(
+           depthFilter = new EarthQuakeUtils.DepthMoreThanFilter(
                Double.parseDouble(moreDepth.getText().trim()), true);
 
          if (rangeDepthR.isSelected() && !rangeDepth.getText().isEmpty()) {
            String[] values = rangeDepth.getText().trim().split(",");
-           depthFilter = new EarthQuakesFeedParser.DepthRangeFilter(Double.parseDouble(values[0]),
+           depthFilter = new EarthQuakeUtils.DepthRangeFilter(Double.parseDouble(values[0]),
                true, Double.parseDouble(values[1]), true);
          }
 
          if (exactMagnitudeR.isSelected() && !exactMagnitude.getText().isEmpty())
-           magnitudeFilter = new EarthQuakesFeedParser.ExactMagnitudeFilter(
+           magnitudeFilter = new EarthQuakeUtils.ExactMagnitudeFilter(
                exactMagnitude.getText().trim());
 
          if (lessMagnitudeR.isSelected() && !lessMagnitude.getText().isEmpty())
-           magnitudeFilter = new EarthQuakesFeedParser.MagnitudeLessThanFilter(
+           magnitudeFilter = new EarthQuakeUtils.MagnitudeLessThanFilter(
                Double.parseDouble(lessMagnitude.getText().trim()), true);
 
          if (moreMagnitudeR.isSelected() && !moreMagnitude.getText().isEmpty())
-           magnitudeFilter = new EarthQuakesFeedParser.MagnitudeMoreThanFilter(
+           magnitudeFilter = new EarthQuakeUtils.MagnitudeMoreThanFilter(
                Double.parseDouble(moreMagnitude.getText().trim()), true);
 
          if (rangeMagnitudeR.isSelected() && !rangeMagnitude.getText().isEmpty()) {
            String[] values = rangeMagnitude.getText().trim().split(",");
-           magnitudeFilter = new EarthQuakesFeedParser.MagnitudeRangeFilter(
+           magnitudeFilter = new EarthQuakeUtils.MagnitudeRangeFilter(
                Double.parseDouble(values[0]), true, Double.parseDouble(values[1]), true);
          }
 
@@ -898,7 +844,7 @@ public class LiveDataMap extends PApplet {
       return;
     }
     // no conditional expression on 2nd parameter as made sure from if condition that it's earthquake map
-    changeData(EarthQuakesMarkerHandler.lastMadeEntries,this.usedMap,getFilterDialog());
+    changeData(DataUtils.lastMadeEarthQuakesMarkers,this.usedMap,getFilterDialog());
 
   }
 
@@ -907,7 +853,7 @@ public class LiveDataMap extends PApplet {
   * */
   private boolean isEarthQuakeSelected()
   {
-    return this.usedMap == Map.DEPTH_EARTHQUAKES || this.usedMap == Map.MAGNITUDE_EARTHQUAKES;
+    return this.usedMap == Map.EARTHQUAKES;
   }
 
   /*
@@ -923,12 +869,7 @@ public class LiveDataMap extends PApplet {
     {
       case MAGNITUDE_EARTHQUAKES_KEY:
         this.map = this.earthQuakesMap;
-        this.usedMap = Map.MAGNITUDE_EARTHQUAKES;
-        break;
-
-      case DEPTH_EARTHQUAKES_KEY:
-        this.usedMap = Map.DEPTH_EARTHQUAKES;
-        this.map = this.earthQuakesMap;
+        this.usedMap = Map.EARTHQUAKES;
         break;
 
       case LIFE_EXPECTANCY_KEY:
@@ -954,20 +895,6 @@ public class LiveDataMap extends PApplet {
     Location mouseLoc = this.map.getLocation(mouseX,mouseY);
     fill(0);
     text("Latitude: "+mouseLoc.getLat()+", Longitude: "+mouseLoc.getLon(),mouseX,mouseY);
-  }
-  /*
-   * used to make final URL objects as with static initializers it's complicated and it always throws
-   * a MalformedURLException that can't be propagated to a private static method solves this by making
-   * a URL object with given string or null if exception so solved.
-   * */
-  private static URL makeURL(String urlString)
-  {
-    try{
-      return new URL(urlString);
-    }catch(Exception ex)
-    {
-      return null;
-    }
   }
 
   /*
