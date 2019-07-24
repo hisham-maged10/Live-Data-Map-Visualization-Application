@@ -4,6 +4,8 @@ package model.marker;/*
   Project Name : a subclass that extends the Abstract EarthquakeMarker that represents ocean earthquake
 */
 
+import static processing.core.PConstants.CENTER;
+
 import de.fhpotsdam.unfolding.data.PointFeature;
 import processing.core.PGraphics;
 
@@ -28,7 +30,9 @@ public class OceanEarthQuakeMarker extends AbstractEarthQuakeMarker {
   @Override
   public void drawMarker(PGraphics pg, float x, float y)
   {
-    pg.ellipse(x,y,this.radius*2,this.radius*2);
+    pg.noFill();
+    pg.rectMode(CENTER);
+    pg.rect(x,y,this.radius*2,this.radius*2,10);
   }
 
 

@@ -32,7 +32,7 @@ public class CityMarker extends AbstractLocationMarker {
   public void drawMarker(PGraphics pg, float x, float y)
   {
     pg.imageMode(PConstants.CORNER);
-    pg.image(img,x-11,y-37);
+    pg.image(img,x-15,y-37);
   }
 
   // get city name of city Marker

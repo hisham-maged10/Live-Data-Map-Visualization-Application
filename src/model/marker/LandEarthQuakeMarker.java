@@ -4,8 +4,11 @@ package model.marker;/*
   Project Name : a subclass extending the AbstractEarthQuakeMarker common behaviour to draw a custom shape marker for land markers
 */
 
+import static processing.core.PConstants.CENTER;
+
 import de.fhpotsdam.unfolding.data.PointFeature;
 import processing.core.PGraphics;
+import processing.core.PImage;
 
 public class LandEarthQuakeMarker extends AbstractEarthQuakeMarker{
 
@@ -28,7 +31,9 @@ public class LandEarthQuakeMarker extends AbstractEarthQuakeMarker{
   @Override
   public void drawMarker(PGraphics pg, float x, float y)
   {
-    pg.rect(x,y,this.radius*2,this.radius*2);
+    pg.noFill();
+    pg.ellipse(x,y,this.radius*2,this.radius*2);
+
   }
 
   // get the country that the earthquake is in

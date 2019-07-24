@@ -84,6 +84,7 @@ public class DataParserBuilder {
       this.file = file;
     }
     // inherited getter methods
+    //TODO: make them somehow private and inherited so encapsulate behaviour for class user to have only earthquakes() or lifeExpectancy() methods
     public LoadType getUsedLoad() {
       return this.usedLoad;
     }

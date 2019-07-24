@@ -57,9 +57,13 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   * */
   static{
     PGraphics pg = new PGraphics();
-    LIGHT_EARTHQUAKE_COLOR = pg.color(6,175,194,100);
-    MODERATE_EARTHQUAKE_COLOR = pg.color(251,255,0,130);
-    INTENSE_EARTHQUAKE_COLOR = pg.color(191,34,40,150);
+    LIGHT_EARTHQUAKE_COLOR = 1678159810; // made using the color method of PApplet
+    MODERATE_EARTHQUAKE_COLOR = -1090781440; // made using the color method of PApplet
+    INTENSE_EARTHQUAKE_COLOR = -1765858776; // made using the color method of PApplet
+//    System.out.println(color(6,175,194,100)); got them using these
+//    System.out.println(color(251,255,0,190));
+//    System.out.println(color(191,34,40,150));
+
     LIGHT_DEPTH_COLOR = pg.color(242,255,56,130);
     MODERATE_DEPTH_COLOR = pg.color(214,71,24,100);
     INTENSE_DEPTH_COLOR = pg.color(148,28,32,200);
@@ -86,7 +90,7 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     //setting the properties of the marker with the added radius properties
     this.setProperties(props);
     // setting value of radius of this marker based on magnitude
-    this.radius = 2F*magnitude;
+    this.radius = 3F*magnitude;
     this.tempRadius = radius;
     if(props.get("age").toString().equalsIgnoreCase("past day"))
       this.pastDay = true;
@@ -113,12 +117,12 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   // getter for magnitude as float for this earthquake marker
   public float getMagnitude()
   {
-    return Float.parseFloat(getStringProperty("magnitude"));
+    return Float.parseFloat(getProperty("magnitude").toString());
   }
   // getter for depth as float for this earthquake marker
   public float getDepth()
   {
-    return Float.parseFloat(getStringProperty("depth"));
+    return Float.parseFloat(getProperty("depth").toString());
   }
   // getter for title as String for this earthquake marker
   public String getTitle()
@@ -128,7 +132,7 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   // getter for radius as float for this earthquake marker
   public float getRadius()
   {
-    return Float.parseFloat(getStringProperty("radius"));
+    return Float.parseFloat(getProperty("radius").toString());
   }
   // getter for age as String for this earthquake Marker
   public String getAge(){ return getStringProperty("age");}
@@ -145,14 +149,14 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     float depth = this.getDepth();
     if(depth >= MODERATE_DEPTH && depth < INTENSE_DEPTH)
     {
-      pg.strokeWeight(5);
+      pg.strokeWeight(9);
       pg.stroke(MODERATE_EARTHQUAKE_COLOR);
     }else if(depth > LIGHT_DEPTH && depth < MODERATE_DEPTH)
     {
-      pg.strokeWeight(4);
+      pg.strokeWeight(7);
       pg.stroke(LIGHT_EARTHQUAKE_COLOR);
     }else{
-      pg.strokeWeight(10);
+      pg.strokeWeight(11);
       pg.stroke(INTENSE_EARTHQUAKE_COLOR);
     }
   }
@@ -167,6 +171,6 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     if((int)tempRadius == (int)this.radius)
       this.radius = 0;
     else
-      ++this.radius;
+      this.radius+=0.4;
   }
 }

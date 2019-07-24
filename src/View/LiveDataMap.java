@@ -18,7 +18,6 @@ import de.fhpotsdam.unfolding.utils.MapUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import javafx.application.Platform;
@@ -47,6 +46,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.core.PSurface;
 import processing.javafx.PSurfaceFX;
 
@@ -68,6 +68,8 @@ public class LiveDataMap extends PApplet {
   private List<Marker> earthQuakesMarkers;
   // used lifeExpectancyMarkers reference
   private List<Marker> lifeExpectancyMarkers;
+  // used City markers reference
+  private List<Marker> cityMarkers;
   //LifeExpectancy Map reference
   private UnfoldingMap lifeExpectancyMap;
 
@@ -75,7 +77,7 @@ public class LiveDataMap extends PApplet {
   private List<ScreenPosition> magnitudeScreenPositions;
 
 
-
+  private PImage cityMarkerImg;
 
   /*
   * Year used to get data of Life Expectancy of all countries
@@ -124,6 +126,8 @@ public class LiveDataMap extends PApplet {
     size(displayWidth,displayHeight-100,FX2D); // -100 so not to fill the whole screen
     smooth(8); // anti-allising x8 (remove if program is slow)
     WorldDataUtils.useApplet(this); // essential for the whole WorldDataUtils to work, if not done will throw unsupportedOperation exception on all operations
+    this.cityMarkerImg = loadImage("data/icon.png");
+    this.cityMarkerImg.resize(14,0);
     initMap();
   }
 
@@ -296,8 +300,6 @@ public class LiveDataMap extends PApplet {
   {
 
     // =========================================== EarthQuakes Section ====================================
-
-
     this.earthQuakesMap = new UnfoldingMap(this,0,0,1920,1080,DEFAULT_PROVIDER);
     MapUtils.createDefaultEventDispatcher(this,this.earthQuakesMap);
     /*
@@ -310,7 +312,10 @@ public class LiveDataMap extends PApplet {
     * URL >> live data url
     * */
     this.earthQuakesMarkers = DataUtils.makeLocalEarthQuakesMarkers("./data/2.5_week.atom");
+    this.cityMarkers = DataUtils.makeCityMarkers();
 
+    this.earthQuakesMap.addMarkers(this.earthQuakesMarkers);
+    this.earthQuakesMap.addMarkers(this.cityMarkers);
     this.earthQuakesMap.zoomToLevel(3);
     this.earthQuakesMap.setZoomRange(3,20);
     this.earthQuakesMap.setPanningRestriction(this.earthQuakesMap.getCenter(),width/2f); //makes map centered and doesn't go out of range
@@ -333,7 +338,29 @@ public class LiveDataMap extends PApplet {
     this.lifeExpectancyMap.setZoomRange(3,20);
     this.lifeExpectancyMap.setPanningRestriction(this.lifeExpectancyMap.getCenter(),width/2f); //makes map centered and doesn't go out of range
 
+
     this.map = this.earthQuakesMap;
+
+    /* made for testing purposes only, don't uncomment
+    System.out.println("Testing earthquake Marker data");
+    this.earthQuakesMarkers.forEach( m -> System.out.println("location: "+m.getLocation().getLat()+", "+m.getLocation().getLon()+"\n properties: "+m.getProperties()));
+
+    System.out.println();
+    System.out.println();
+
+    System.out.println("Testing Life Expectancy Marker data");
+    this.lifeExpectancyMarkers.forEach( m -> System.out.println(" properties: "+m.getProperties()));
+
+    System.out.println();
+    System.out.println();
+
+    System.out.println("Testing City Marker data");
+    this.cityMarkers.forEach( m -> System.out.println("location: "+m.getLocation().getLat()+", "+m.getLocation().getLon()+"\n properties: "+m.getProperties()));
+
+    System.out.println("terminating");
+    System.exit(0);
+    */
+
   }
 
 
@@ -349,23 +376,48 @@ public class LiveDataMap extends PApplet {
   private void addLegend()
   {
     fill(color(230));
-    noStroke();
-    rect(30,height-300,140,250);
+    strokeWeight(3);
+    stroke(0);
+    rect(30,height-350,150,300);
     textSize(13);
     fill(color(0));
+    textAlign(LEFT,CENTER);
     switch(this.usedMap)
     {
       case EARTHQUAKES:
-        text("Legend",65,height-350+75);
-        text(" + Magnitude",60,height-350+120);
-        text("4.0 + Magnitude",60,height-350+170);
-        text("Below 4.0",60,height-350+220);
-        fill(255,0,0);
-        ellipse(45,height-350+115,18,18);
-        fill(255,255,0);
-        ellipse(45,height-350+165,15,15);
-        fill(0,0,255);
-        ellipse(45,height-350+215,12,12);
+        text("Earthquakes",65,height-400+65);
+
+        image(this.cityMarkerImg,40,height-400+98);
+        text(" City Marker",60,height-400+100);
+        text("Land-Quake",60,height-400+125);
+        text("Ocean-Quake",60,height-400+150);
+        strokeWeight(1);
+        fill(255,255,255);
+        stroke(0);
+        ellipse(45,height-400+130,14,14);
+        fill(255,255,255);
+        rect(38,height-400+145,14,14,9);
+        fill(0);
+        text("Size ~ Magnitude",50,height-400+175);
+        text(" Shallow",60,height-400+205);
+        text("Intermediate",60,height-400+230);
+        text("Deep",60,height-400+255);
+        text("Past Day ~ Animated",45,height-400+290);
+        strokeWeight(1);
+        fill(6,175,194,100);
+        stroke(0);
+        ellipse(45,height-400+210,13,13);
+        strokeWeight(1);
+        fill(251,255,0,190);
+        stroke(0);
+        ellipse(45,height-400+235,13,13);
+        strokeWeight(1);
+        fill(191,34,40,150);
+        stroke(0);
+        ellipse(45,height-400+260,13,13);
+
+
+
         break;
       case LIFEEXPECTANCY:
         text("Life Expectancy",50,height-350+75);

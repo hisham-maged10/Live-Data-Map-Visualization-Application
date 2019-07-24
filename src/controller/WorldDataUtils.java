@@ -312,7 +312,8 @@ public class WorldDataUtils {
   private static void initializeImages()
   {
     isAppletMade();
-    currentApplet.loadImage("./data/icon.png");
+    cityMarkerImg = currentApplet.loadImage("./data/icon.png");
+    cityMarkerImg.resize(32,0);
   }
 
   public static PImage getCityMarkerImage()
