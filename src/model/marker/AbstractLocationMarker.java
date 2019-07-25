@@ -43,8 +43,13 @@ public abstract class AbstractLocationMarker extends SimplePointMarker implement
   @Override
   public void draw(PGraphics pg, float x, float y)
   {
-    pg.pushStyle();
-    this.drawMarker(pg,x,y); // draws the customized marker
-    pg.popStyle();
+    if(!hidden) { // draws only if marker is not hidden from interactivity
+      pg.pushStyle();
+      this.drawMarker(pg, x, y); // draws the customized marker
+      if (isSelected()) {
+        this.showTitle(pg, x, y);
+      }
+      pg.popStyle();
+    }
   }
 }

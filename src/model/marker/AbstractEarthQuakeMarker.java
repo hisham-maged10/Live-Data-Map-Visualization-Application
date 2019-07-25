@@ -4,10 +4,15 @@ package model.marker;/*
   Project Name : An Abstract Class implementing the common code or behavior of CustomizedMarker interface
 */
 
+import static processing.core.PConstants.CORNER;
+import static processing.core.PConstants.LEFT;
+
 import de.fhpotsdam.unfolding.data.PointFeature;
 import de.fhpotsdam.unfolding.marker.SimplePointMarker;
+import de.fhpotsdam.unfolding.utils.ScreenPosition;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import processing.core.PGraphics;
 
 public abstract class AbstractEarthQuakeMarker extends SimplePointMarker implements CustomizedMarker{
@@ -15,7 +20,13 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   // shows whether the earthquake marker is on land or on ocean
   private boolean onLand;
   private float tempRadius; // used if age is past day to make animation
-  private boolean pastDay = false;
+  private boolean pastDay = false; // to check if past day or not (including pastHour)
+  private List<ScreenPosition> citiesInThreatCircle; // holds cities in close promixity of threat circle
+  {
+    this.citiesInThreatCircle = new ArrayList<>(); // initializes it to be an empty array list
+  }
+  private boolean clicked;
+
   /*
    * Light earthQuake value : 4.0
    * moderate earthQuake Value : 4.0 - 5.0
@@ -91,8 +102,10 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     this.setProperties(props);
     // setting value of radius of this marker based on magnitude
     this.radius = 3F*magnitude;
-    this.tempRadius = radius;
-    if(props.get("age").toString().equalsIgnoreCase("past day"))
+    this.tempRadius = radius; // used in animating of marker if it's from the past day (including past hour earthquakes)
+    String tempAge = null;
+    // gets the age of the earthquake and if it's in the past day or past hour then makes pastDay to be true
+    if((tempAge=getStringProperty("age")).equalsIgnoreCase("past day") || tempAge.equalsIgnoreCase("past hour"))
       this.pastDay = true;
 
   }
@@ -108,12 +121,48 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   @Override
   public void draw(PGraphics pg, float x, float y)
   {
-    pg.pushStyle(); //saves previous style
-    determineColor(pg); //determines the color based on magnitude
-    if(this.pastDay){changeRadius();} //makes the animation if earthquake is of past day
-    this.drawMarker(pg,x,y); // draws the specified marker look
-    pg.popStyle(); // reset to previous styling of whole current applet
+    if(!hidden) // draws only if marker is not hidden from interactivity
+    {
+      pg.pushStyle(); //saves previous style
+      determineColor(pg); //determines the color based on magnitude
+      if (this.pastDay) {
+        changeRadius();
+      } //makes the animation if earthquake is of past day
+      this.drawMarker(pg, x, y); // draws the specified marker look
+      // shows the title of the earthquake marker if it's selected meaning that it's under the cursor position now
+      // with help of the mouseMoved EventHandler on map
+      if (isSelected()) {
+        showTitle(pg, x, y);
+      }
+      // shows the radius of the threat circle if clicked
+      if(clicked)
+      {
+        showThreatCircleLines(pg,x,y);
+      }
+      pg.popStyle(); // reset to previous styling of whole current applet
+    }
   }
+
+  /*
+  * shows the magnitude, depth, title of the earthquake
+  * @Param: PGraphics pg that is used for rendering
+  * @Param: float x-coordinate
+  * @Param: float y-coordinate
+  * */
+  @Override
+  public void showTitle(PGraphics pg, float x, float y)
+  {
+    pg.fill(245,240,208);
+    pg.noStroke();
+    pg.rectMode(CORNER);
+    pg.textSize(12);
+    String desc = getMagnitude()+" Richter , "+getDepth()+" km, "+getTitle();
+    pg.rect(x,y-20,pg.textWidth(desc)+10,20);
+    pg.textAlign(LEFT);
+    pg.fill(0);
+    pg.text(desc,x+5,y-5);
+  }
+
   // getter for magnitude as float for this earthquake marker
   public float getMagnitude()
   {
@@ -160,12 +209,15 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
       pg.stroke(INTENSE_EARTHQUAKE_COLOR);
     }
   }
-
+// a setter for the onland field
   public void setOnLand(boolean onLand)
   {
     this.onLand = onLand;
   }
-
+  /*
+   * private helper method
+   * made to change radius ot produce an animation for earthquakes
+   */
   private void changeRadius()
   {
     if((int)tempRadius == (int)this.radius)
@@ -173,4 +225,59 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     else
       this.radius+=0.4;
   }
+
+  /*
+  * gets the threat circle's radius of the earthquake represented by that marker
+  * DISCLAIMER: this formula is for illustration only, not intended
+  * to be used for safety-critical or predictive applications.
+  * */
+  public double getThreatCircle()
+  {
+    // an equation taken from the internet to measure the threat circle's radius
+    // from an earthquake marker
+    double miles = 20.0 * Math.pow(1.8, 2*getMagnitude()-5); // gets radius on miles
+    return (miles * 1.6); // return the radius in km
+  }
+
+  public boolean isClicked() {
+    return clicked;
+  }
+
+  public void setClicked(boolean clicked) {
+    this.clicked = clicked;
+  }
+
+  /*
+  * shows stroked lines from the earth quake to the city markers that is proximity of the
+  * threat circle
+  * @Param: PGraphics pg used for rendering
+  * @param: x-coordinate
+  * @Param: y-coordinate
+  * */
+  private void showThreatCircleLines(PGraphics pg, float x, float y)
+  {
+    pg.strokeWeight(3);
+    pg.stroke(191, 34, 40, 150);
+    this.citiesInThreatCircle.forEach( m ->{
+      pg.line(x,y,m.x,m.y); // makes lines from earthquake to cities in threat
+    });
+
+  }
+
+  /*
+  * a public method that is used by the map in mouse Released to add the cities in
+  * threat circle
+  * throw IllegalArgumentException if something else rather than a city is sent
+  * @Param: ScreenPositon holding the city marker location
+  * */
+  public void addCityInThreat(ScreenPosition city)
+  {
+      this.citiesInThreatCircle.add(city);
+  }
+
+  public void clearCities()
+  {
+    this.citiesInThreatCircle.clear();
+  }
+
 }

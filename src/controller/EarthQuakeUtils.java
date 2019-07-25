@@ -371,7 +371,7 @@ public class EarthQuakeUtils {
       parsedFeatures.add((tempPoint = new PointFeature(new Location(e.getLatitude(),e.getLongitude()))));
       tempPoint.putProperty("magnitude",e.getExactMagnitude().doubleValue());
       tempPoint.putProperty("depth",e.getExactDepth().doubleValue());
-      tempPoint.putProperty("title",e.getTitle());
+      tempPoint.putProperty("title",e.getLocationTitle());
       tempPoint.putProperty("age",e.getAge());
     }
 

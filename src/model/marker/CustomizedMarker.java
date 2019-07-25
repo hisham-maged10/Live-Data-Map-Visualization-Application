@@ -9,4 +9,5 @@ import processing.core.PGraphics;
 public interface CustomizedMarker {
 
   public void drawMarker(PGraphics pg, float x, float y);
+  public void showTitle(PGraphics pg, float x, float y);
 }
