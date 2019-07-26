@@ -63,6 +63,7 @@ public class LiveDataMap extends PApplet {
   private enum LiveDatachoice {
     LAST_DAY, LAST_HOUR, LAST_WEEK, LAST_MONTH;
   }
+  //TODO: SOLVE the problem of filtering doesn't change markers as markers are added to city and the previous ones aren't removed
 
   // Used Map reference
   private UnfoldingMap map;

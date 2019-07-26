@@ -15,6 +15,18 @@ import java.util.HashMap;
 import java.util.List;
 import processing.core.PGraphics;
 
+/**
+ * <h1>AbstractEarthQuakeMarker</h1>
+ * <p>
+ *   Defines the common behaviour of Earth quake markers
+ * </p>
+ * @author Hisham Maged
+ * @since 22/7/2019
+ * @version 1.1
+ * @see LandEarthQuakeMarker
+ * @see OceanEarthQuakeMarker
+ * @see CustomizedMarker
+ */
 public abstract class AbstractEarthQuakeMarker extends SimplePointMarker implements CustomizedMarker{
 
   // shows whether the earthquake marker is on land or on ocean
@@ -80,14 +92,14 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     INTENSE_DEPTH_COLOR = pg.color(148,28,32,200);
   }
 
-  /*
+  /**
   * PointFeature constructor that takes a point feature to initialize the SimplePointMarker
   * implementation using the super constructor with location of Feature
   * also setting the properties of the earthquake marker (properties of simplepointmarker ) using
   * the Map of properties of each feature, and getting the magnitude from properties
   * and putting radius property times a value of magnitude to determine size of marker based on magnitude
   * and setting the inherited radius property of simple point marker to a value based on magnitude
-  * @Param: PointFeature representing the earthquake data at a certain location
+  * @param feature PointFeature representing the earthquake data at a certain location
   * */
   public AbstractEarthQuakeMarker(PointFeature feature)
   {
@@ -109,14 +121,13 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
       this.pastDay = true;
 
   }
-  /*
-  * the overriden method of the SimplePointMarker class
-  * that draws a special marker due to the specified code using PGraphics and x,y positions
+  /**
+  * Draws a special marker due to the specified code using PGraphics and x,y positions
   * since this is an abstract class, this is a normal implementation that is inherited and changed
   * due to the actual type changing when calling the drawMarker method of CustomizedMarker interface
-  * @Param:PGgraphics to change graphics of the marker
-  * @Param : float x for x-coordinate
-  * @Param : float y for y-coordinate
+  * @param pg PGgraphics to render graphics of the marker
+  * @param x float for x-coordinate
+  * @param y float for y-coordinate
   * */
   @Override
   public void draw(PGraphics pg, float x, float y)
@@ -143,11 +154,11 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     }
   }
 
-  /*
+  /**
   * shows the magnitude, depth, title of the earthquake
-  * @Param: PGraphics pg that is used for rendering
-  * @Param: float x-coordinate
-  * @Param: float y-coordinate
+  * @param pg PGraphics that is used for rendering
+  * @param x float x-coordinate
+  * @param y float y-coordinate
   * */
   @Override
   public void showTitle(PGraphics pg, float x, float y)
@@ -163,29 +174,51 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     pg.text(desc,x+5,y-5);
   }
 
-  // getter for magnitude as float for this earthquake marker
+  /**
+   * Gets the Magnitude of the Earthquake
+   * @return Magnitude of the Earthquake
+   */
   public float getMagnitude()
   {
     return Float.parseFloat(getProperty("magnitude").toString());
   }
-  // getter for depth as float for this earthquake marker
+
+  /**
+   * Gets the Depth of the Earthquake
+   * @return Depth of the Earthquake
+   */
   public float getDepth()
   {
     return Float.parseFloat(getProperty("depth").toString());
   }
-  // getter for title as String for this earthquake marker
+  /**
+   * Gets Title of earthquake from RSS feed
+   * @return String title of earthquake
+   */
   public String getTitle()
   {
     return getStringProperty("title");
   }
-  // getter for radius as float for this earthquake marker
+
+  /**
+   * Gets Radius of Earthquake marker
+   * @return float radius of the Earthquake Marker
+   */
   public float getRadius()
   {
     return Float.parseFloat(getProperty("radius").toString());
   }
-  // getter for age as String for this earthquake Marker
+
+  /**
+   * Gets Age of the Earthquake
+   * @return String representation of Earthquake's age
+   */
   public String getAge(){ return getStringProperty("age");}
-  // returns whether the marker is on land or ocean
+
+  /**
+   * Checks whether the Earthquake Marker is on land or not
+   * @return True if on land, false otherwise.
+   */
   public boolean isOnLand()
   {
     return this.onLand;
@@ -209,7 +242,11 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
       pg.stroke(INTENSE_EARTHQUAKE_COLOR);
     }
   }
-// a setter for the onland field
+
+  /**
+   * Sets the value if earthquake marker is on land or not
+   * @param onLand value checking whether earthquake marker is on land or not
+   */
   public void setOnLand(boolean onLand)
   {
     this.onLand = onLand;
@@ -226,11 +263,12 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
       this.radius+=0.4;
   }
 
-  /*
-  * gets the threat circle's radius of the earthquake represented by that marker
+  /**
+  * Gets the threat circle's radius of the earthquake represented by that marker
   * DISCLAIMER: this formula is for illustration only, not intended
   * to be used for safety-critical or predictive applications.
-  * */
+  * @return The raidus of the Threat Circle in KM
+   * */
   public double getThreatCircle()
   {
     // an equation taken from the internet to measure the threat circle's radius
@@ -239,20 +277,28 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     return (miles * 1.6); // return the radius in km
   }
 
+  /**
+   * Checks whether earthquake marker is clicked or not
+   * @return True if clicked, false otherwise.
+   */
   public boolean isClicked() {
     return clicked;
   }
 
+  /**
+   * Sets the marker to be of clicked state or not
+   * @param clicked boolean Value to indicate that the marker is clicked or not.
+   */
   public void setClicked(boolean clicked) {
     this.clicked = clicked;
   }
 
-  /*
-  * shows stroked lines from the earth quake to the city markers that is proximity of the
+  /**
+  * Shows stroked lines from the earth quake to the city markers that is proximity of the
   * threat circle
-  * @Param: PGraphics pg used for rendering
-  * @param: x-coordinate
-  * @Param: y-coordinate
+  * @param pg PGraphics used for rendering
+  * @param x float for x-coordinate
+  * @param y foat for y-coordinate
   * */
   private void showThreatCircleLines(PGraphics pg, float x, float y)
   {
@@ -264,17 +310,21 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
 
   }
 
-  /*
-  * a public method that is used by the map in mouse Released to add the cities in
+  /**
+  * Adds cities that are in threat circle to Earthquake.
+   * used by the map in mouse Released to add the cities in
   * threat circle
   * throw IllegalArgumentException if something else rather than a city is sent
-  * @Param: ScreenPositon holding the city marker location
+  * @param city ScreenPositon holding the city marker location
   * */
   public void addCityInThreat(ScreenPosition city)
   {
       this.citiesInThreatCircle.add(city);
   }
 
+  /**
+   * Clears all cities from the threat circle of the earthquake
+   */
   public void clearCities()
   {
     this.citiesInThreatCircle.clear();

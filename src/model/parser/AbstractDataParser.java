@@ -20,11 +20,20 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.util.Optional;
 import model.pojo.DataEntry;
-import model.pojo.DataParser;
 
 /*
 * Accepts only Pojo types that implements DataEntry and are comparables, later giving the accepted type to DataParser interface to keep hierarchy
 * */
+
+/**
+ * AbstractDataParser defines common behaviour for the derived classes
+ * @author Hisham Maged
+ * @version 1.1
+ * @since 21/7/2019
+ * @see AbstractXML
+ * @see AbstractCSV
+ * @param <T> Accepts only Type parameters that implements DataEntry and are comparable
+ */
 public abstract class AbstractDataParser<T extends DataEntry & Comparable<? super T>> implements
     DataParser<T> {
 
@@ -35,13 +44,13 @@ public abstract class AbstractDataParser<T extends DataEntry & Comparable<? supe
     this.entries = new ArrayList<>();
   }
 
-  /*
-  * A constructor that opens up the Swing File chooser that accepts files of given header and given extensions only
+  /**
+  * Swing Filechooser Constructor that opens up the Swing File chooser that accepts files of given header and given extensions only.
   * made for API Flexibility for the lower hierarchy of DataParser
-  * returns Illegal Argument Exception if no file was chosen or given invalid inputs
-  * @Param: String that represetns the Type of Files that can be chosen
-  * @Param: a String vararg that represents the extensions of the files that can be chosen
-  *         given as "TXT" || "txt" (no dot), as the Swing version makes it implicitly
+  * @param header A header string that represents the Type of Files that can be chosen by file chooser
+  * @param extensions String vararg that represents the extensions of the files that can be chosen
+  * given as "TXT" || "txt" (no dot), as the Swing version makes it implicitly
+  * @throws IllegalArgumentException if no file was chosen or given invalid inputs
   * */
   public AbstractDataParser(String header, String... extensions)
   {
@@ -49,14 +58,14 @@ public abstract class AbstractDataParser<T extends DataEntry & Comparable<? supe
       throw new IllegalArgumentException("Invalid inputs for header or extensions or both, given header: "+header+" given extensions: "+getExtensionsAsString(extensions));
     init(getFile(header, extensions));
   }
-  /*
-   * A constructor that opens up the JavaFx File chooser that accepts files of given header and given extensions only
+  /**
+   * JavaFX FileChooser constructor that opens up the JavaFx File chooser that accepts files of given header and given extensions only.
    * made for API Flexibility for the lower hierarchy of DataParser
-   * returns Illegal Argument Exception if no file was chosen or given invalid inputs
-   * @Param: Stage of used FX Application
-   * @Param: String that represetns the Type of Files that can be chosen
-   * @Param: a String vararg that represents the extensions of the files that can be chosen
+   * @param stage Stage of used FX Application
+   * @param header A header string that represents the Type of Files that can be chosen by file chooser
+   * @param extensions String vararg that represents the extensions of the files that can be chosen
    *         given as "*.TXT" || "*.txt" (asteric and dot before extension), as the Swing version makes it implicitly
+   * @throws IllegalArgumentException if no file was chosen or given invalid inputs
    * */
   public AbstractDataParser(Stage stage, String header, String... extensions)
   {
@@ -65,13 +74,13 @@ public abstract class AbstractDataParser<T extends DataEntry & Comparable<? supe
     init(getFile(stage,header,extensions));
   }
 
-  /*
-  * A constructor that uses the given FilePath to construct a File from after
+  /**
+  * FilePath constructor that uses the given FilePath to construct a File from. after
   * validating to be a valid filepath and the file it holds is of valid extensions using the
   * varargs String extensions and it can be ".txt" or "txt" as endsWith method was used
-  * @Param Path containing the file path of the file needed
-  * @Param: extensions to validate against
-  * throws illegal argument exception if invalid inputs and then itiializes the inputStream using the file made out of this path
+  * @param filePath The Path containing the file path of the file needed
+  * @param extensions A String varargs that has the extensions to validate on
+  * @throws IllegalArgumentException if invalid inputs, if filepath is incorrect or extensions are not applied
   * */
   public AbstractDataParser(Path filePath, String... extensions)
   {
@@ -80,13 +89,14 @@ public abstract class AbstractDataParser<T extends DataEntry & Comparable<? supe
     init(filePath.toFile());
   }
 
-  /*
-  * a constructor that takes a File that to be converted into an input stream
+  /**
+  * File constructor that takes a File that to be converted into an input stream.
   * and takes a compiled regex pattern to match the file name against it for extension validation
-  * @Param File file to be converted to input stream ( it's name is converted to lower case)
-  * @Param fileValidator pattern to be matched against the file extensions (case insensitive as name of file is converted to lower case)
   * A pattern is given for API Flexibility for lower level abstract classes
-  * */
+  * @param file File to be converted to input stream ( it's name is converted to lower case)
+  * @param fileValidator pattern to be matched against the file extensions (case insensitive as name of file is converted to lower case)
+  * @throws IllegalArgumentException if pattern is of incorrect regex or file is null or pattern do not apply on it
+   * */
   public AbstractDataParser(File file, Pattern fileValidator)
   {
     if(!isValid(file,fileValidator))
@@ -94,12 +104,13 @@ public abstract class AbstractDataParser<T extends DataEntry & Comparable<? supe
     init(file);
   }
 
-  /*
-   * a constructor that takes a File that to be converted into an input stream
-   * and takes a compiled regex pattern to match the file name against it for extension validation
-   * @Param File file to be converted to input stream ( it's name is converted to lower case)
-   * @Param fileValidator pattern to be matched against the file extensions (case insensitive as name of file is converted to lower case)
+  /**
+   * URL constructor that takes a URL that to be converted into an input stream.
+   * and takes a compiled regex pattern to match the url against it for extension validation
    * A pattern is given for API Flexibility for lower level abstract classes
+   * @param url URL to be converted to input stream ( it's name is converted to lower case)
+   * @param urlValidator pattern to be matched against the file extensions (case insensitive as url is converted to lower case)
+   * @throws IllegalArgumentException if pattern is of incorrect regex or url is null or pattern do not apply on it
    * */
   public AbstractDataParser(URL url, Pattern urlValidator)
   {
@@ -107,10 +118,10 @@ public abstract class AbstractDataParser<T extends DataEntry & Comparable<? supe
       throw new IllegalArgumentException("invalid inputs for url or urlValidator, given file: "+url.toString()+" , fileValidator: "+urlValidator.toString());
     init(url);
   }
-  /*
-  * the required interface method that is to be inherited by all lower level hierarchies
-  * returns the private field entries after being filled, giving unsupportedOperation exception if parse was not yet used
-  * also returns it unmodefiable so can't be added to
+  /**
+  * Gets the Parsed Data from the input source,
+  * @throws UnsupportedOperationException if <code>parse()</code> was not yet used
+  * @return The parsed Data in an unmodefiable container so can't be added to
   * */
   @Override
   public Iterable<T> getParsedData()
@@ -120,9 +131,9 @@ public abstract class AbstractDataParser<T extends DataEntry & Comparable<? supe
     return Collections.unmodifiableList(this.entries);
   }
 
-  /*
-  * the required interface method that is to be inherited by all lower level hierarchies
-  * returns the input source used after converted from file to inputstream or from url to inputStream
+  /**
+  * Gets the input source of the Data
+  * @return The input source used after converted from file to inputstream or from url to inputStream
   * */
   @Override
   public InputStream getSource()
@@ -130,12 +141,15 @@ public abstract class AbstractDataParser<T extends DataEntry & Comparable<? supe
     return this.inputSource;
   }
 
-  /*
-  * a method made for the lower hierarchy levels to have the ability to add elements to the private
-  * inherited List of entries that takes a POJO object of same type as the hierarhcy
+  /**
+  * Adds a POJO object of same type as the hierarchy.
+   * <p>
+   *   A method made for the lower hierarchy levels to have the ability to add elements to the private
+   *   inherited List of entries that
+   * </p>
   * and adds it to the list, returning true if accepted, false if not
-  * throws illegal argument exception if null is given, as it should not accept null
-  * @Param : T pojo object to be added to the list
+  * @param  pojo Pojo object to be added to the list
+  * @throws IllegalArgumentException if null is given as input
   * */
   public boolean addPojo(T pojo)
   {

@@ -4,6 +4,13 @@ package model.pojo;
 * @Date: 20-7-2019
 *  A markup interface used in class hierarchy
 * */
-public interface DataEntry {
-  // just a markup interface marking classes to be POJO classes
-}
+
+/**
+ * A markup interface used for marking classes to be <b>POJO</b> classes
+ * @author Hisham Maged
+ * @version 1.1
+ * @since 20/7/2019
+ * @see EarthQuakeEntry
+ * @see LifeExpectancyEntry
+ */
+public interface DataEntry {}

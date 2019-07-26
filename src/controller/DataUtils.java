@@ -5,7 +5,6 @@ package controller;/*
 */
 
 import controller.EarthQuakeUtils.EarthQuakeFilter;
-import controller.EarthQuakeUtils.MagnitudeMoreThanFilter;
 import de.fhpotsdam.unfolding.data.Feature;
 import de.fhpotsdam.unfolding.data.PointFeature;
 import de.fhpotsdam.unfolding.marker.Marker;
@@ -15,9 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javafx.stage.Stage;
-import model.parser.EarthQuakesParser;
-import model.parser.LifeExpectancyParser;
-import model.pojo.DataParser;
+import model.parser.DataParser;
 import model.pojo.EarthQuakeEntry;
 import model.pojo.LifeExpectancyEntry;
 

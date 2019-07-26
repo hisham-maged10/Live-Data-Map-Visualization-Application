@@ -20,6 +20,17 @@ import org.apache.commons.csv.CSVRecord;
 /*
  * extends AbstractCSV and it's a generic hierhachy so given LifeExpectancyEntry which is the POJO that will hold the data of LifeExpectancy records
  * */
+/**
+ * <h1>LifeExpectancyParser</h1> parses the CSV format files of World bank data site
+ * that makes statistics about Life expectancy from 1960 to 2017 inclusive
+ * @author Hisham Maged
+ * @version 1.1
+ * @since 21/7/2019
+ * @see AbstractCSV
+ * @see AbstractDataParser
+ * @see DataParser
+ * @see LifeExpectancyEntry
+ */
 public class LifeExpectancyParser extends AbstractCSV<LifeExpectancyEntry> {
 
   // private static final that is used to validate the URL to be of the WolrdBank site and it's lower case
@@ -27,64 +38,70 @@ public class LifeExpectancyParser extends AbstractCSV<LifeExpectancyEntry> {
   //TODO: Find the suitable URL for the LifeExpectancy Values
   private static final Pattern URL_VALIDATOR = Pattern.compile("");
 
-  /*
-   * default constructor that will use the AbstractCSV constructor to get the
+  /**
+   * Swing File Chooser constructor. that will use the AbstactCSV constructor to get the
    * Correct File format of CSV files using a SWing File Chooser
    * */
   public LifeExpectancyParser() {
     super();
   }
 
-  /*
-   * Stage constructor that will use the AbstractCSV constructor to get the
+  /**
+   * Stage constructor. that will use the AbstactCSV constructor to get the
    * Correct File format of CSV files using an FX File Chooser
-   * @Param: Stage of the FX Application
+   * @param stage Stage of the FX Application
+   *@throws IllegalArgumentException if no file was chosen.
    * */
   public LifeExpectancyParser(Stage stage) {
     super(stage);
   }
-  /*
-   * String constructor that will use the AbstractCSV constructor to validate
+  /**
+   * String constructor. that will use the AbstactCSV constructor to validate
    * the file and make the inputStream using it
-   * @Param: String path of the file
-   * throws NullPointerException as null check can't be handled here so Exception propagation
+   * @param filePath String that has path of the file
+   * @throws NullPointerException as null check can't be handled here so Exception propagation
+   * @throws IllegalArgumentException if invalid path was given.
    * */
   public LifeExpectancyParser(String filePath) throws NullPointerException {
     super(filePath);
   }
-  /*
-   * File Consturctor that will use the AbstractCSV constructor to validate the file
+  /**
+   * File Consturctor. that will use the AbstactCSV constructor to validate the file
    * to be of correct extension and such and then makes the InputStream object using it
-   * @Param: File pointing to file object in memory
+   * @param File pointing to file object in memory
+   * @throws IllegalArgumentException if invalid file was given (null or doesn't exist or not of correct format).
    * */
   public LifeExpectancyParser(File file) {
     super(file);
   }
 
-  /*
-   * URL Constructor that will use the AbstractCSV constructor that will use the AbstractDataParser
+  /**
+   * URL Constructor. that will use the AbstactCSV constructor that will use the AbstractDataParser
    * Constructor to validate the URL of given url link using the private Static final Pattern that validates
    * the url to be of specified location
-   * @Param: Url holding the data needed
+   * @param Url holding the data needed
+   * @throws IllegalArgumentException if invalid URL was given.
    * */
   public LifeExpectancyParser(URL url) {
     super(url, URL_VALIDATOR);
   }
 
-  /*
-   * Main method used in parsing of CSVFile using the Apache csv parser and Apache CSV format classes
+  /**
+   * Parses CSVFile and should be first method to get called.
+   * using the Apache csv parser and Apache CSV format classes
    * uses the first record in the file as header and makes internally a map containing each record due to its index
    * and its String column name using the default charset and default format of CSV
    * uses the InputStream made by the AbstractDataParser and is accessed using
-   * the .getSource method as it's private and uses the .addPojo to add
+   * the <code>.getSource()</code> method as it's private and uses the <code>.addPojo(T pojo)</code> to add
    * the pojo object made from each record
-   * if null object then will throw IllegalARgumentException
    * and it uses the entries List made by AbstractDataParser and it's of type LifeExpectancyEntry
    * as you extended the AbstractCSV with LifeExpectancyEntry type parameter
    * also that's why addPojo accepts LifeExpectancyEntry
+   * @throws IllegalArgumentException if a null element was parsed
+   * @return Same LifeExpectancyParser object used for API Flexibility to use Aggregate Operations, null if an un-handled exception happens
    * */
   @Override
-  public boolean parse()
+  public LifeExpectancyParser parse()
   {
     try {
       CSVParser parser = CSVParser.parse(this.getSource(), Charset.defaultCharset(), CSVFormat.DEFAULT.withFirstRecordAsHeader());
@@ -96,7 +113,7 @@ public class LifeExpectancyParser extends AbstractCSV<LifeExpectancyEntry> {
             fillMap(new HashMap<>(57),record) // makes a Map of initialy capacity 57 holding 57 year data, Integer as key for year and float for lifeexpectancy value
         ));
       }
-    return true; // returns true since the loop finished without exceptions
+    return this; // returns true since the loop finished without exceptions
     }catch(IOException ex)
     {
       System.err.println(ex.getMessage());
@@ -106,7 +123,7 @@ public class LifeExpectancyParser extends AbstractCSV<LifeExpectancyEntry> {
 
     }
 
-    return false; // if reached here in code then an exception happened
+    return null; // if reached here in code then an exception happened
   }
 
   /*

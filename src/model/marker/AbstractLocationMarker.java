@@ -10,35 +10,46 @@ import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 import processing.core.PGraphics;
 
+/**
+ * <h1>AbstractLocationMarker</h1>
+ * <p>
+ *   An Abstract Class that define the common behaviour for city markers or Locaiton Markers
+ * </p>
+ * @author Hisham Maged
+ * @since 22/7/2019
+ * @version 1.1
+ * @see CityMarker
+ * @see CustomizedMarker
+ */
 public abstract class AbstractLocationMarker extends SimplePointMarker implements CustomizedMarker{
 
 
-  /*
+  /**
   * Location constructor that makes initializes the simplePointMarker implementation using
   * super constructor
-  * @Param Location of marker
+  * @param location Location of place to make marker for
   * */
   public AbstractLocationMarker(Location location)
   {
     super(location);
   }
 
-  /*
+  /**
   * A Point Feature constructor that initializes the simplePointMarker implementation using super
   * constructor that accepts location and properties
-  * @Param : Feature that holds place of place
+  * @param place Feature that holds place of place
   * feature because the city data from GeoReader returns as List<Feature> and casted to do our implementaiton
   * */
   public AbstractLocationMarker(Feature place){
     super(((PointFeature)place).getLocation(),place.getProperties());
   }
 
-  /*
-  * Overriden method that draws the place markers or locattion markers using a customized
+  /**
+  * draws the place markers or location markers using a customized
   * draw method due to subclasses using drawMarker() method from customizedMarker interface
-  * @Param: PGraphics to draw marker
-  * @Param: float x- coordinate
-  * @Param: float y- coordinate
+  * @param pg PGraphics to draw marker
+  * @param x float x-coordinate
+  * @param y float y-coordinate
   * */
   @Override
   public void draw(PGraphics pg, float x, float y)

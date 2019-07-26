@@ -17,69 +17,86 @@ import org.w3c.dom.NodeList;
 /*
 * extends AbstractXML and it's a generic hierhachy so given EarthQuakeEntry which is the POJO that will hold the data of earthQuakes
 * */
+
+/**
+ * <h1>EarthQuakesParser</h1> parses the XML format files of USGS earthquakes data site
+ * that makes Live RSS Feed about earthquakes for past hour, day, week and month.
+ * @author Hisham Maged
+ * @version 1.1
+ * @since 21/7/2019
+ * @see AbstractXML
+ * @see AbstractDataParser
+ * @see DataParser
+ * @see EarthQuakeEntry
+ */
 public class EarthQuakesParser extends AbstractXML<EarthQuakeEntry>{
 
   // private static final that is used to validate the URL to be of the USGS site and it's lower case
   // because in hierarchy, it converts the url to lower case
   private static final Pattern URL_VALIDATOR = Pattern.compile(".*earthquake.usgs.gov/earthquakes/feed/v1.0/summary.*\\.atom");
 
-  /*
-  * default constructor that will use the AbstractXML constructor to get the
+  /**
+  * Swing File Chooser constructor. that will use the AbstractXML constructor to get the
   * Correct File format of XML or ATOM files using a SWing File Chooser
   * */
   public EarthQuakesParser() {
     super();
   }
 
-  /*
-  * Stage constructor that will use the AbstractXML constructor to get the
+  /**
+  * Stage constructor. that will use the AbstractXML constructor to get the
   * Correct File format of XML or ATOM files using an FX File Chooser
-  * @Param: Stage of the FX Application
+  * @param stage Stage of the FX Application
+   *@throws IllegalArgumentException if no file was chosen.
   * */
   public EarthQuakesParser(Stage stage) {
     super(stage);
   }
-  /*
-  * String constructor that will use the AbstractXML constructor to validate
+  /**
+  * String constructor. that will use the AbstractXML constructor to validate
   * the file and make the inputStream using it
-  * @Param: String path of the file
-  * throws NullPointerException as null check can't be handled here so Exception propagation
+  * @param filePath String that has path of the file
+  * @throws NullPointerException as null check can't be handled here so Exception propagation
+  * @throws IllegalArgumentException if invalid path was given.
   * */
   public EarthQuakesParser(String filePath) throws NullPointerException {
     super(filePath);
   }
-  /*
-  * File Consturctor that will use the AbstractXML constructor to validate the file
+  /**
+  * File Consturctor. that will use the AbstractXML constructor to validate the file
   * to be of correct extension and such and then makes the InputStream object using it
-  * @Param: File pointing to file object in memory
+  * @param File pointing to file object in memory
+  * @throws IllegalArgumentException if invalid file was given (null or doesn't exist or not of correct format).
   * */
   public EarthQuakesParser(File file) {
     super(file);
   }
 
-  /*
-  * URL Constructor that will use the AbstractXML constructor that will use the AbstractDataParser
+  /**
+  * URL Constructor. that will use the AbstractXML constructor that will use the AbstractDataParser
   * Constructor to validate the URL of given url link using the private Static final Pattern that validates
   * the url to be of specified location
-  * @Param: Url holding the data needed
+  * @param Url holding the data needed
+  * @throws IllegalArgumentException if invalid URL was given.
   * */
   public EarthQuakesParser(URL url) {
     super(url, URL_VALIDATOR);
   }
 
-  /*
-   * Main method to parse the RSS fEED and should be the first method to be used
-   * in the class, uses the inputsource made in initialization and parses it
-   * using the public inherited method .getSource(), using Xerces XML Parser
+  /**
+   *  parses the RSS FEED and should be the first method to be used.
+   * in the class, uses the input source made in initialization and parses it
+   * using the public inherited method <code>.getSource()</code>, using <b>Xerces</b> XML Parser
    * Makes a Node element of entry (which is the main Node that holds all the info of each line or input in file)
    * and using that Entry node, gets the title,location,depth,Age using their respected tag names in the RSS feed file
    * and makes a EarthQuakeEntry Pojo Object using these data
    * putting each one in a List of entries that is inhertied from hierarchy using the inherited
-   * using the method .addPojo(T pojo), T in that case is EarthQuakeEntry because we extend the AbstractXML<EarthQuakeEntry>
-   * if null is sent to it, IllegalArgumentException will be thrown.
+   * using the method <code>.addPojo(T pojo)</code>, T in that case is EarthQuakeEntry because we extend the AbstractXML<EarthQuakeEntry>
+   * @throws IllegalArgumentException if null is sent to it.
+   * @return Same EarthQuakesParser object used for API Flexibility to use Aggregate Operations, null if an un-handled exception happens
    * */
   @Override
-  public boolean parse()
+  public EarthQuakesParser parse()
   {
     try {
       System.out.println("Using InputStream: "+this.getSource().toString());
@@ -102,11 +119,11 @@ public class EarthQuakesParser extends AbstractXML<EarthQuakeEntry>{
           ));
         }
       }
-      return true; // returns true if loop is finished meaning no exceptions happened
+      return this; // returns true if loop is finished meaning no exceptions happened
     }catch(Exception ex)
     {
       System.err.println(ex.getMessage());
     }
-    return false; // returns false if an exception occured
+    return null; // returns false if an exception occured
   }
 }

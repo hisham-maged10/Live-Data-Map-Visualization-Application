@@ -4,29 +4,37 @@ package model.marker;/*
   Project Name : a subclass extending the AbstractEarthQuakeMarker common behaviour to draw a custom shape marker for land markers
 */
 
-import static processing.core.PConstants.CENTER;
 
 import de.fhpotsdam.unfolding.data.PointFeature;
 import processing.core.PGraphics;
-import processing.core.PImage;
 
+/**
+ * <h1>LandEarthQuakeMarker</h1>
+ * <p>
+ *   Defines the behavior of the EarthQuake Marker on Land
+ * </p>
+ * @author Hisham Maged
+ * @version 1.1
+ * @since 22/7/2019
+ * @see AbstractEarthQuakeMarker
+ */
 public class LandEarthQuakeMarker extends AbstractEarthQuakeMarker{
 
-  /*
-  * PointFeature constructor that initializes hierarchy of AbstractEarthQuakeMarker using super constructor
+  /**
+  * PointFeature constructor that initializes hierarchy of AbstractEarthQuakeMarker. uses super constructor to initialize implementation
   * sets the inherited onLand boolean to true
-  * @Param:PointFeature feature that locates the earthquake
+  * @param feature PointFeature that locates the earthquake
   * */
   public LandEarthQuakeMarker(PointFeature feature) {
     super(feature);
     this.setOnLand(true);
   }
 
-  /*
-  * Main method that draws the customized shape of the land earthquake marker
-  * @Param: PGraphics that draws the earthquake
-  * @Param: float x-coordinate
-  * @Param: float y-coordinate
+  /**
+  * Draws the customized shape of the land earthquake marker
+  * @param pg PGraphics that draws the earthquake
+  * @param x float x-coordinate
+  * @param y float y-coordinate
   * */
   @Override
   public void drawMarker(PGraphics pg, float x, float y)
@@ -36,7 +44,10 @@ public class LandEarthQuakeMarker extends AbstractEarthQuakeMarker{
 
   }
 
-  // get the country that the earthquake is in
+  /**
+   * Gets the country that the earthquake is in
+   * @return The Country name that the earthquake occurred in
+   */
   public String getCountry()
   {
     return getStringProperty("country");

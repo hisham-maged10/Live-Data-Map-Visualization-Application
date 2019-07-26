@@ -13,23 +13,46 @@ import processing.core.PConstants;
 import processing.core.PGraphics;
 import processing.core.PImage;
 
+/**
+ * <h1>City Marker</h1>
+ * <p>
+ *   Defines the behaviour of the City Marker of the map
+ * </p>
+ * @author Hisham Maged
+ * @since 22/7/2019
+ * @version 1.1
+ * @see AbstractLocationMarker
+ * @see CustomizedMarker
+ */
 public class CityMarker extends AbstractLocationMarker {
 
   private PImage img; //holds the image of the marker that will represent the location
 
-
+  /**
+   * Location Constructor that takes a location of the city to make a marker of.
+   * @param location location of the city
+   * @param img image that the marker is gonna be rendered into
+   */
   public CityMarker(Location location,PImage img) {
     super(location);
     this.img = img;
   }
 
+  /**
+   * Feature constructtor that takes a feature containing the location of the city to make a marker of.
+   * @param place Feature holding location of the city
+   * @param img image that the marker is gonna be rendered into
+   */
   public CityMarker(Feature place,PImage img) {
     super(place);
     this.img = img;
   }
 
-  /*
-  * The actual method responsible for drawing the city marker based on implementation of AbstractLocationMarker
+  /**
+  * draws the city marker based on implementation of AbstractLocationMarker
+   * @param pg PGraphics to render the marker
+   * @param x float x-coordinate
+   * @param y float y-coordinate
   * */
   @Override
   public void drawMarker(PGraphics pg, float x, float y)
@@ -37,11 +60,11 @@ public class CityMarker extends AbstractLocationMarker {
     pg.imageMode(PConstants.CORNER);
     pg.image(img,x-15,y-37);
   }
-  /*
-   * shows the city, country, population of a city marker
-   * @Param: PGraphics pg that is used for rendering
-   * @Param: float x-coordinate
-   * @Param: float y-coordinate
+  /**
+   * Shows the city, country, population of a city marker
+   * @param pg PGraphics that is used for rendering
+   * @param x float x-coordinate
+   * @param y float y-coordinate
    * */
   @Override
   public void showTitle(PGraphics pg, float x, float y)
@@ -56,18 +79,29 @@ public class CityMarker extends AbstractLocationMarker {
     pg.fill(0);
     pg.text(desc,x+5,y-25);
   }
-  // get city name of city Marker
+
+  /**
+   * Get city name of this city Marker
+   * @return String of City Name
+   */
   public String getCityName()
   {
     return getStringProperty("name");
   }
 
-  // get country name
+  /**
+   * Gets country name of this City Marker
+   * @return Country Name
+   */
   public String getCountry()
   {
     return getStringProperty("country");
   }
-  // get population of city
+
+  /**
+   * Gets population of this city in millions
+    * @return Population of this city in millions as a float
+   */
   public float getPopulation()
   {
     return Float.parseFloat(getStringProperty("population"));
