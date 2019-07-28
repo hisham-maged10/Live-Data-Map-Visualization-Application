@@ -5,6 +5,7 @@ package model.parser;/*
 */
 
 import java.io.InputStream;
+import java.util.List;
 import model.pojo.DataEntry;
 
 /**
@@ -26,9 +27,9 @@ public interface DataParser<T extends DataEntry & Comparable<? super T>> {
 
   /**
    * Gets the Parsed Data in an UnModefiable container
-   * @return Iterable that holds the parsed data to be easily iterated on.
+   * @return List that holds the parsed data to be easily iterated on.
    */
-  public Iterable<T> getParsedData(); // returns the record in any form of iterable
+  public List<T> getParsedData(); // returns the record in any form of iterable
 
   /**
    * Gets the Source of Data.

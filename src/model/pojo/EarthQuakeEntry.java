@@ -192,14 +192,14 @@ public class EarthQuakeEntry implements DataEntry,Comparable<EarthQuakeEntry>{
   }
 
   /**
-   * This method defines the Natural Ordering using the exact magnitude to sort in ascending order
+   * This method defines the Natural Ordering using the exact magnitude to sort in descending order
    * @param  anotherQuake  An object that holds another <code>EarthQuakeEntry</code> to be compared against
    * @return int representation of the comparison < 0 if less than, == 0 if equals to, > 0 if bigger than
    * */
   @Override
   public int compareTo(EarthQuakeEntry anotherQuake)
   {
-    return this.exactMagnitude.compareTo(anotherQuake.getExactMagnitude());
+    return anotherQuake.getExactMagnitude().compareTo(this.exactMagnitude); // Descending order by reverse parameters
   }
 
   /**

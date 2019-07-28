@@ -21,6 +21,7 @@ import org.w3c.dom.NodeList;
 /**
  * <h1>EarthQuakesParser</h1> parses the XML format files of USGS earthquakes data site
  * that makes Live RSS Feed about earthquakes for past hour, day, week and month.
+ * <b> Should be instansiated using DataParserBuilder class only </b>
  * @author Hisham Maged
  * @version 1.1
  * @since 21/7/2019

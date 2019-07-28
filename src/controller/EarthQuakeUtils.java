@@ -4,40 +4,89 @@ package controller;/*
   Class desc : A utitility class for EarthQuake data facility methods
 */
 
-import de.fhpotsdam.unfolding.marker.Marker;
 import model.pojo.EarthQuakeEntry;
+import model.pojo.DataEntry;
 import de.fhpotsdam.unfolding.data.PointFeature;
 import de.fhpotsdam.unfolding.geo.Location;
-import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
+/**
+ * <h1>EarthQuakeUtils</h1>
+ * <p>
+ *   A utility class that can Filter Earthquake data based on
+ *   <ul>
+ *     <li><b>Magnitude</b>
+   *     <ul>
+     *     <li>Earthquakes having a certain magnitude</li>
+     *     <li>Earthquakes having magnitude less than a given value</li>
+     *     <li>Earthquakes having magnitude more than a given value</li>
+     *     <li>Earthquakes whose magnitude fall in a range of magnitude values</li>
+   *     </ul>
+ *     </li>
+ *     <li><b>Depth</b>
+   *     <ul>
+ *       <li>Earthquakes having a certain magnitude</li>
+   *     <li>Earthquakes having magnitude less than a given value</li>
+   *     <li>Earthquakes having magnitude more than a given value</li>
+   *     <li>Earthquakes whose magnitude fall in a range of magnitude values</li>
+ *      </ul>
+ *      </li>
+ *   </ul>
+ * </p>
+ * <p>
+ *   Also can Convert Earthquake Data into PointFeatures to be used by UnfoldingMap API
+ * </p>
+ * @author Hisham Maged
+ * @since 21/7/2019
+ * @version 1.1
+ * @see EarthQuakeEntry
+ * @see DataEntry
+ */
 public class EarthQuakeUtils {
-
-
-
-
   //TODO: CHECK WHY DEPTH FILTERS ARE BUGGY
-  /*
-   * A Markup interface made for API Flexibility in calling of EarthQuakeUtils filter method
+  /**
+   * <h1>
+   *   EarthQuakeFilter
+   * </h1>
+   * A Markup interface made for API Flexibility in calling of <code>EarthQuakeUtils</code> filter method
+   * @see EarthQuakeUtils
+   * @see ExactMagnitudeFilter
+   * @see MagnitudeLessThanFilter
+   * @see MagnitudeMoreThanFilter
+   * @see MagnitudeRangeFilter
+   * @see ExactDepthFilter
+   * @see DepthLessThanFilter
+   * @see DepthMoreThanFilter
+   * @see DepthRangeFilter
+   * @see #filter
    * */
   public interface EarthQuakeFilter extends Predicate<EarthQuakeEntry> {}
 
   /* ===============================================  Magnitude Filters Section  =========================================*/
-  /*
-   * a public static class to Filter magnitude based on an exact value, using BigDecimals comparisons
+  /**
+   * <h1>ExactMagnitudeFilter</h1>
+   * <p>a public static class to Filter magnitude based on an exact value, using BigDecimals comparisons.
    * to get exact values of entry and given magnitude and compares them equally using BigDecimal comparison
-   * for exact value
+   * for exact value</p>
    * implements EarthQuakeFilter which is a Markup interface for API Flexibility that implements Predicate<EarthQuakeEntry>
    * and Override the test method to return true if and only if the values exactly match
-   * @Constructor_Param: exact magnitude value that you want magnitude to be filtered based on
+   * @author Hisham Maged
+   * @version 1.1
+   * @since 21/7/2019
    * */
   public static class ExactMagnitudeFilter implements EarthQuakeFilter
   {
     private String magnitude;
+
+    /**
+     * Sole Constructor that takes magnitude as a String and extracts its value in a BigDecimal
+     * to keep exactness
+     * @throws IllegalArgumentException if null is given or value is less than 0
+     * @param magnitude exact magnitude value that you want magnitude to be filtered based on
+     */
     public ExactMagnitudeFilter(String magnitude)
     {
       if(magnitude == null)
@@ -54,6 +103,11 @@ public class EarthQuakeUtils {
       }
     }
 
+    /**
+     * Tests whether the given magnitude of instance is exactly equal to given entry's exact magnitude
+     * @param entry EarthQuakeEntry that holds the pojo object to be compared against given magnitude
+     * @return True if the earthquake entry has magnitude exactly equal to given one, false otherwise
+     */
     @Override
     public boolean test(EarthQuakeEntry entry)
     {
@@ -61,17 +115,27 @@ public class EarthQuakeUtils {
     }
   }
 
-  /*
-   * a public static class made for API Flexibility of filtering of Earth Quakes
+  /**
+   * <h1>MagnitudeLessThanFilter</h1>
+   * <p>a public static class made for API Flexibility of filtering of Earth Quakes
    * MagnitudeLessThanFilter is used to Filter the earth quakes to be of magnitude less than
    * given value and it's slightly exact, not exact as the ExactMagnitudeFilter as not needed as much
-   * @Ctor Param: double value which is the upper Limit magnitude, if less than 0 gives Illegal ArgumentException
-   * @Ctor_Param: boolean value which specifies whether to include upper limit or not
+   * </p>
+   * @author Hisham Maged
+   * @version 1.1
+   * @since 21/7/2019
    * */
   public static class MagnitudeLessThanFilter implements EarthQuakeFilter{
 
     private double upperLimitMagnitude;
     private boolean inclusive;
+
+    /**
+     * Sole Constructor that takes the upper limit magnitude as a double and checks
+     * against it if it's applicable
+     * @param upperLimitMagnitude double value holding the Upper limit magnitude
+     * @param inclusive boolean value to specify whether that upper magnitude is inclusive or not
+     */
     public MagnitudeLessThanFilter(double upperLimitMagnitude,boolean inclusive)
     {
       if(Double.compare(upperLimitMagnitude, 0.0) < 0)
@@ -80,6 +144,11 @@ public class EarthQuakeUtils {
       this.inclusive = inclusive;
     }
 
+    /**
+     * Tests whether the given magnitude of instance is less than or (equal based on inclusive boolean) to given entry's magnitude
+     * @param entry EarthQuakeEntry that holds the pojo object to be compared against given magnitude
+     * @return True if the earthquake entry has magnitude less than given one, false otherwise
+     */
     @Override
     public boolean test(EarthQuakeEntry entry)
     {
@@ -90,17 +159,27 @@ public class EarthQuakeUtils {
 
   }
 
-  /*
+  /** <h1>MagnitudeMoreThanFilter</h1>
+   * <p>
    * a public static class made for API Flexibility of filtering of Earth Quakes
    * MagnitudeMoreThanFilter is used to Filter the earth quakes to be of magnitude More than
    * given value and it's slightly exact, not exact as the ExactMagnitudeFilter as not needed as much
-   * @Ctor Param: double value which is the lower Limit magnitude, if less than 0 gives Illegal ArgumentException
-   * @Ctor_Param: boolean value which specifies whether to include lower limit or not
+   * </p>
+   * @author Hisham Maged
+   * @version 1.1
+   * @since 21/7/2019
    * */
   public static class MagnitudeMoreThanFilter implements EarthQuakeFilter{
 
     private double lowerLimitMagnitude;
     private boolean inclusive;
+
+    /**
+     * Sole Constructor that takes the lower limit magnitude as a double and checks
+     * against it if it's applicable
+     * @param lowerLimitMagnitude double value holding the lower limit magnitude
+     * @param inclusive boolean value to specify whether that lower magnitude is inclusive or not
+     */
     public MagnitudeMoreThanFilter(double lowerLimitMagnitude,boolean inclusive)
     {
       if(Double.compare(lowerLimitMagnitude, 0.0) < 0)
@@ -109,6 +188,11 @@ public class EarthQuakeUtils {
       this.inclusive = inclusive;
     }
 
+    /**
+     * Tests whether the given magnitude of instance is more than or (equal based on inclusive boolean) to given entry's magnitude
+     * @param entry EarthQuakeEntry that holds the pojo object to be compared against given magnitude
+     * @return True if the earthquake entry has magnitude more than given one, false otherwise
+     */
     @Override
     public boolean test(EarthQuakeEntry entry)
     {
@@ -119,21 +203,31 @@ public class EarthQuakeUtils {
 
   }
 
-  /*
-   * a public static class made for API Flexibility of Filtering Of EarthQuakes using the Filter method
+  /**
+   * <h1>MagnitudeRangeFilter</h1>
+   * <p>a public static class made for API Flexibility of Filtering Of EarthQuakes using the Filter method
    * MagnitudeRangeFilter is used to Filter the earth quakes to be of magnitude less than a given value
    * and more than another given value making a range amd it uses slightly less exact double comparisons not like the ExactMagmitudeFilter
    * which is extremely exact and has two boolean values for whether to include the upper limit and lower limit or not
    * using a negative value or upperLimit equal to or less than lower limit will result in Illegal Argument Exception
-   * @CTOR_PARAM: double lower limit, a lower limit value where magnitudes can't be less than it
-   * @CTOR_PARAM: boolean lowerInclusive, a boolean specifing wheter the lowerLimit should be inclusive or not
-   * @CTOR_PARAM: double upperLimit, an upper bound limit where magnitudes can't be more than it
-   * @CTOR_PARAM : boolean upperInclusve, a boolean specifying whether upperlimit should be inclusive or not
+   * </p>
+   * @author Hisham Maged
+   * @version 1.1
+   * @since 21/7/2019
    * */
   public static class MagnitudeRangeFilter implements EarthQuakeFilter
   {
     private double lowerLimit, upperLimit;
     private boolean lowerInclusive, upperInclusive;
+
+    /**
+     * Sole constructor that takes lower limit magnitude and upper limit magnitude and whether they're inclusive
+     * or not to test if it's applicable against entries
+     * @param lowerLimit double lower limit, a lower limit value where magnitudes can't be less than it
+     * @param lowerInclusive boolean lowerInclusive, a boolean specifing wheter the lowerLimit should be inclusive or not
+     * @param upperLimit double upperLimit, an upper bound limit where magnitudes can't be more than it
+     * @param upperInclusive boolean upperInclusve, a boolean specifying whether upperlimit should be inclusive or not
+     */
     public MagnitudeRangeFilter(double lowerLimit,boolean lowerInclusive, double upperLimit, boolean upperInclusive)
     {
       // no need to test if upperLimit is less than 0 as the lower limit, upperlimit test satisfies it as lower limit must be positive to reach it
@@ -146,7 +240,12 @@ public class EarthQuakeUtils {
       this.lowerInclusive = lowerInclusive;
       this.upperInclusive = upperInclusive;
     }
-
+    /**
+     * Tests whether the given magnitude of instance is more than or (equal based on inclusive boolean) to given entry's magnitude
+     * and less than or equal to upper limit magnitude of given entry's magnitude
+     * @param entry EarthQuakeEntry that holds the pojo object to be compared against given magnitude
+     * @return True if the earthquake entry has magnitude less than upper limit and more than lower limit given, false otherwise
+     */
     @Override
     public boolean test(EarthQuakeEntry entry)
     {
@@ -163,17 +262,26 @@ public class EarthQuakeUtils {
 
 
   /* ===============================================  Depth Filters Section  =========================================*/
-  /*
-   * a public static class to Filter depth based on an exact value, using BigDecimals comparisons
+  /**
+   *  <h1>ExactDepthFilter</h1>
+   * <p>a public static class to Filter depth based on an exact value, using BigDecimals comparisons
    * to get exact values of entry and given depth and compares them equally using BigDecimal comparison
-   * for exact value
+   * for exact value</p>
    * implements EarthQuakeFilter which is a Markup interface for API Flexibility that implements Predicate<EarthQuakeEntry>
    * and Override the test method to return true if and only if the values exactly match
-   * @Constructor_Param: exact depth value that you want depth to be filtered based on, given as a String to exactly match the values
+   * @author Hisham Maged
+   * @version 1.1
+   * @since 21/7/2019
    * */
   public static class ExactDepthFilter implements EarthQuakeFilter
   {
     private String depth;
+    /**
+     * Sole Constructor that takes depth as a String and extracts its value in a BigDecimal
+     * to keep exactness
+     * @throws IllegalArgumentException if null is given or value is less than 0
+     * @param depth exact magnitude value that you want depth to be filtered based on
+     */
     public ExactDepthFilter(String depth)
     {
       if(depth == null)
@@ -190,6 +298,11 @@ public class EarthQuakeUtils {
       }
     }
 
+    /**
+     * Tests whether the given depth of instance is exactly equal to given entry's exact depth
+     * @param entry EarthQuakeEntry that holds the pojo object to be compared against given depth
+     * @return True if the earthquake entry has depth equal to given one, false otherwise
+     */
     @Override
     public boolean test(EarthQuakeEntry entry)
     {
@@ -197,17 +310,27 @@ public class EarthQuakeUtils {
     }
   }
 
-  /*
+  /**
+   * <h1>DepthLessThanFilter</h1>
+   * <p>
    * a public static class made for API Flexibility of filtering of Earth Quakes
    * DepthLessThanFilter is used to Filter the earth quakes to be of depth less than
    * given value and it's slightly exact, not exact as the ExactDepthFilter as not needed as much
-   * @Ctor Param: double value which is the upper Limit depth, if less than 0 gives Illegal ArgumentException
-   * @Ctor_Param: boolean value which specifies whether to include upper limit or not
+   * </p>
+   * @author Hisham Maged
+   * @version 1.1
+   * @since 21/7/2019
    * */
   public static class DepthLessThanFilter implements EarthQuakeFilter{
 
     private double upperLimitDepth;
     private boolean inclusive;
+    /**
+     * Sole Constructor that takes the upper limit depth as a double and checks
+     * against it if it's applicable
+     * @param upperLimitMagnitude double value holding the Upper limit depth
+     * @param inclusive boolean value to specify whether that upper depth is inclusive or not
+     */
     public DepthLessThanFilter(double upperLimitDepth,boolean inclusive)
     {
       if(Double.compare(upperLimitDepth, 0.0) < 0)
@@ -215,7 +338,11 @@ public class EarthQuakeUtils {
       this.upperLimitDepth = upperLimitDepth;
       this.inclusive = inclusive;
     }
-
+    /**
+     * Tests whether the given depth of instance is less than or (equal based on inclusive boolean) to given entry's depth
+     * @param entry EarthQuakeEntry that holds the pojo object to be compared against given depth
+     * @return True if the earthquake entry has depth less than given one, false otherwise
+     */
     @Override
     public boolean test(EarthQuakeEntry entry)
     {
@@ -226,17 +353,26 @@ public class EarthQuakeUtils {
 
   }
 
-  /*
+  /** <h1>DepthMoreThanFilter</h1>
+   * <p>
    * a public static class made for API Flexibility of filtering of Earth Quakes
    * DepthMoreThanFilter is used to Filter the earth quakes to be of depth More than
    * given value and it's slightly exact, not exact as the ExactDepthFilter as not needed as much
-   * @Ctor Param: double value which is the lower Limit depth, if less than 0 gives Illegal ArgumentException
-   * @Ctor_Param: boolean value which specifies whether to include lower limit or not
+   * </p>
+   * @author Hisham Maged
+   * @version 1.1
+   * @since 21/7/2019
    * */
   public static class DepthMoreThanFilter implements EarthQuakeFilter{
 
     private double lowerLimitDepth;
     private boolean inclusive;
+    /**
+     * Sole Constructor that takes the lower limit depth as a double and checks
+     * against it if it's applicable
+     * @param lowerLimitDepth double value holding the lower limit depth
+     * @param inclusive boolean value to specify whether that lower depth is inclusive or not
+     */
     public DepthMoreThanFilter(double lowerLimitDepth,boolean inclusive)
     {
       if(Double.compare(lowerLimitDepth, 0.0) < 0)
@@ -245,6 +381,11 @@ public class EarthQuakeUtils {
       this.inclusive = inclusive;
     }
 
+    /**
+     * Tests whether the given depth of instance is more than or (equal based on inclusive boolean) to given entry's depth
+     * @param entry EarthQuakeEntry that holds the pojo object to be compared against given depth
+     * @return True if the earthquake entry has depth more than given one, false otherwise
+     */
     @Override
     public boolean test(EarthQuakeEntry entry)
     {
@@ -255,21 +396,31 @@ public class EarthQuakeUtils {
 
   }
 
-  /*
+  /**
+   * <h1>DepthRangeFilter</h1>
+   * <p>
    * a public static class made for API Flexibility of Filtering Of EarthQuakes using the Filter method
    * DepthRangeFilter is used to Filter the earth quakes to be of depth less than a given value
    * and more than another given value making a range amd it uses slightly less exact double comparisons not like the ExactMagmitudeFilter
    * which is extremely exact and has two boolean values for whether to include the upper limit and lower limit or not
    * using a negative value or upperLimit equal to or less than lower limit will result in Illegal Argument Exception
-   * @CTOR_PARAM: double lower limit, a lower limit value where depth can't be less than it
-   * @CTOR_PARAM: boolean lowerInclusive, a boolean specifing wheter the lowerLimit should be inclusive or not
-   * @CTOR_PARAM: double upperLimit, an upper bound limit where depth can't be more than it
-   * @CTOR_PARAM : boolean upperInclusve, a boolean specifying whether upperlimit should be inclusive or not
+   * </p>
+   * @author Hisham Maged
+   * @version 1.1
+   * @since 21/7/2019
    * */
   public static class DepthRangeFilter implements EarthQuakeFilter
   {
     private double lowerLimit, upperLimit;
     private boolean lowerInclusive, upperInclusive;
+    /**
+     * Sole constructor that takes lower limit depth and upper limit depth and whether they're inclusive
+     * or not to test if it's applicable against entries
+     * @param lowerLimit double lower limit, a lower limit value where depth can't be less than it
+     * @param lowerInclusive boolean lowerInclusive, a boolean specifing wheter the lowerLimit should be inclusive or not
+     * @param upperLimit double upperLimit, an upper bound limit where depth can't be more than it
+     * @param upperInclusive boolean upperInclusve, a boolean specifying whether upperlimit should be inclusive or not
+     */
     public DepthRangeFilter(double lowerLimit,boolean lowerInclusive, double upperLimit, boolean upperInclusive)
     {
       // no need to test if upperLimit is less than 0 as the lower limit, upperlimit test satisfies it as lower limit must be positive to reach it
@@ -283,6 +434,12 @@ public class EarthQuakeUtils {
       this.upperInclusive = upperInclusive;
     }
 
+    /**
+     * Tests whether the given depth of instance is more than or (equal based on inclusive boolean) to given entry's depth
+     * and less than or equal to upper limit magnitude of given entry's depth
+     * @param entry EarthQuakeEntry that holds the pojo object to be compared against given magnitude
+     * @return True if the earthquake entry has depth less than upper limit and more than lower limit given, false otherwise
+     */
     @Override
     public boolean test(EarthQuakeEntry entry)
     {
@@ -300,15 +457,15 @@ public class EarthQuakeUtils {
 
 
 
-  /*
-   * A public static method that filters EarthQuakes according to EarthQuakeFilters var args
-   * a kinda generic algorithm that is suitable for all filter usage and the filters used are
+  /**
+   * Filters EarthQuakes according to EarthQuakeFilters var args.
+   * General algorithm that is suitable for all filter usage and the filters used are
    * static classes of the EarthQuakeUtils
    * the method is static as it doesn't belong to an instance, it belongs to the class itself in concept
-   * returns Iterable<EarthQuakeEntry>
-   * @Param Iterable<EarthQuakeEntry> that holds the earthquake data in POJOs made by EarthQuakesParser
-   * @Param EarthQuakeFilter var arg that holds any number of filters and all of them will be applied
-   * */
+   * @param data Iterable<EarthQuakeEntry> that holds the earthquake data in POJOs made by EarthQuakesParser
+   * @param filters EarthQuakeFilter var arg that holds any number of filters and all of them will be applied
+   * @return Iterable containing EarthQuakeEntries that are applicable to given filters
+   * * */
   public static Iterable<EarthQuakeEntry> filter(Iterable<EarthQuakeEntry> data,EarthQuakeFilter... filters)
   {
     if(data == null)
@@ -339,7 +496,6 @@ public class EarthQuakeUtils {
    * @Param : EarthQuakeEntry that the filters are tested against
    * @Param : filters vararg to be applied on each entry
    */
-
   private static boolean isApplicable(EarthQuakeEntry entry, EarthQuakeFilter... filters)
   {
     for(EarthQuakeFilter f : filters)
@@ -354,13 +510,13 @@ public class EarthQuakeUtils {
 
 
 
-  /*
-   * Parses the Entries from the given RSS Feed file into Features for markers on map
+  /**
+   * Parses the Entries from the given RSS Feed file into Features for markers on map.
    * making a List of PointFeatures and making a reference to each PointFeature made
    * to put magnitude,depth,title,age properties in the HashMap of the pointFeature as its properties
    * using the EarthQuake Pojo properties
-   * returns List<PointFeature>
-   * @Param : Iterable<EarthQuakeEntry> made using the AbstractDataParser subclass EarthQuakesParser using .getParsedData()
+   * @param data Iterable<EarthQuakeEntry> made using the AbstractDataParser subclass EarthQuakesParser using .getParsedData()
+   * @return returns List<PointFeature> corresponding to given EarthQuakeEntries to be used with UnfoldingMap API
    * */
   public static List<PointFeature> toPointFeatures(Iterable<EarthQuakeEntry> data)
   {

@@ -12,10 +12,36 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import model.marker.AbstractEarthQuakeMarker;
 import model.marker.AbstractLocationMarker;
+import model.marker.AirportMarker;
 import model.marker.CityMarker;
 import model.marker.LandEarthQuakeMarker;
 import model.marker.OceanEarthQuakeMarker;
+import model.pojo.EarthQuakeEntry;
+import model.pojo.DataEntry;
 
+/**
+ * <h1>MarkerUtils</h1>
+ * <p>
+ *   A Utility class made for creating markers for UnFoldingMap API
+ *   <ul>
+ *     <li>Earthquake Markers</li>
+ *     <li> City Markers</li>
+ *   </ul>
+ * </p>
+ * @author Hisham Maged
+ * @version 1.1
+ * @since 22/7/2019
+ * @see EarthQuakeUtils
+ * @see MarkerUtils
+ * @see WorldDataUtils
+ * @see EarthQuakeEntry
+ * @see DataEntry
+ * @see AbstractEarthQuakeMarker
+ * @see AbstractLocationMarker
+ * @see CityMarker
+ * @see LandEarthQuakeMarker
+ * @see OceanEarthQuakeMarker
+ */
 public class MarkerUtils {
 
   // private static final predicate that represents the condition of type differentiation of earthquakes at the moment, change behaviour by changing implementation
@@ -36,19 +62,20 @@ public class MarkerUtils {
                                                                                                          new OceanEarthQuakeMarker(pf);
   //private static final Function whose implementation is used in making of Location Markers for each point feature
   // returning a type if it satisfies the predicate implementation and returns another one if not
-  // at the moment >> always constructs city markers
+  // makes city | airportt markers atm
   private static final Function<Feature, AbstractLocationMarker> locationMarkersFunction = pf -> locationMarkersPredicate.test(pf)?
-                                                                                                                               new CityMarker(pf,WorldDataUtils.getCityMarkerImage()) :
+                                                                                                                               new AirportMarker(pf) :
                                                                                                                                new CityMarker(pf,WorldDataUtils.getCityMarkerImage());
 
 
-  /*
-  * Makes the List<Marker> to be added to the map and List<Marker> will contain customized markers
+  /**
+  * Makes the List<Marker> to be added to the map and List<Marker> will contain customized markers.
   * that implements the CustomizedMarker interface ,so it will hold different types of Customized Markers in same list
   * to return a single data structure to be added to map directly, uses the earthQuakeMarkersFunction
   * loops on each PointFeature checking to see of which earthquake type it is from the AbstractEarthQuakeMarker hierarchy
   * constructing the representing type using the earthQuakesMarkersFunction and adding it to the list of markers
-  * @ParamL List<PointFeature> containing the locations of the earthquakes
+  * @param locations List of PointFeature containing the locations of the earthquakes
+   * @return A List of Markers due to given Point Features
   * */
   public static List<Marker> makeEarthQuakesMarkers(List<PointFeature> locations)
   {
@@ -63,14 +90,14 @@ public class MarkerUtils {
     return earthQuakeMarkers;
   }
 
-  //TODO: needs adjustments for hierarhcy, later and also adjusting in the predicate and function (only makes city markers at the moment)
-  /*
-   * Makes the List<Marker> to be added to the map and List<Marker> will contain customized markers
+  /**
+   * Makes the List<Marker> to be added to the map and List<Marker> will contain customized markers.
    * that implements the CustomizedMarker interface ,so it will hold different types of Customized Markers in same list
    * to return a single data structure to be added to map directly, uses the locationMarkersFunction
    * loops on each PointFeature checking to see of which location type it is from the AbstractLocationMarker hierarchy
    * constructing the representing type using the locationMarkersFunction and adding it to the list of markers
-   * @Param: list<Feature> containing the locations of the locations
+   * @param locations list of Feature containing the locations of the locations
+   * @return List containing Markers of corresponding to Locations PointFeature
    * */
   public static List<Marker> makeLocationMarkers(List<? extends Feature> locations)
   {

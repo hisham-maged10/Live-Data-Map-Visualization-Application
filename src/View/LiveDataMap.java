@@ -64,6 +64,7 @@ public class LiveDataMap extends PApplet {
     LAST_DAY, LAST_HOUR, LAST_WEEK, LAST_MONTH;
   }
   //TODO: SOLVE the problem of filtering doesn't change markers as markers are added to city and the previous ones aren't removed
+  //TODO: IMPLEMENT ISAIRPORT() METHOD IN WORLDDATAUTILS, ADD AIRPORT MARKERS METHODS IN DATAUTILS EVERYTHING ELSE FOR AIRPORTS IS DONE
 
   // Used Map reference
   private UnfoldingMap map;

@@ -7,9 +7,40 @@ package controller;/*
 import java.io.File;
 import java.net.URL;
 import javafx.stage.Stage;
+import model.parser.AirportParser;
 import model.parser.EarthQuakesParser;
+import model.parser.AbstractXML;
+import model.parser.AbstractCSV;
 import model.parser.LifeExpectancyParser;
 
+/**
+ * <h1>DataParserBuilder</h1>
+ * <p>
+ *   Main Class made to make all kinds of Data Parsers to get Pojo objects data filled.
+ *   Should always be used instead of using Data Parsers Constructors for API Flexibility
+ *   Can get Data from
+ *   <ul>
+ *     <li>
+ *       Local File
+ *       <ul>
+ *         <li> Using Swing File Chooser</li>
+ *         <li> Using JavaFX File Chooser</li>
+ *         <li> From a Sting containing File Path</li>
+ *         <li> Using a File Object pointing to File on disk</li>
+ *       </ul>
+ *     </li>
+ *     <li>Live Data From URL</li>
+ *   </ul>
+ * </p>
+ * @author Hisham Maged
+ * @version 1.1
+ * @see 23/7/2019
+ * @see AbstractXML
+ * @see AbstractCSV
+ * @see EarthQuakesParser
+ * @see LifeExpectancyParser;
+ *
+ */
 public class DataParserBuilder {
 
   /*
@@ -107,10 +138,15 @@ public class DataParserBuilder {
 
   }
 
-  /*
+  /**
+  * <h1>XMLBuilder</h1>
   * A utility class made as static class for package streamlining and it is responsible for the
   * creating of the required XMLParser type using it's methods choosing a way of loading of data
   * then using its static class XMLTypeBuilder to build the required type
+  * @author Hisham Maged
+   * @version 1.1
+   * @since 23/7/2019
+   * @see XMLTypeBuilder
   * */
   public static class XMLBuilder implements Buildable{
 
@@ -120,49 +156,55 @@ public class DataParserBuilder {
     * */
     private XMLBuilder(){}
 
-    /*
-    * returns the swing file chooser version
+    /**
+    * Makes a XMLTypeBuilder that uses Swing File Chooser for aggregate operations
+    * @return the swing file chooser XMLTypeBuilder version
     * */
     @Override
     public XMLTypeBuilder swingFileChooser()
     {
       return new XMLTypeBuilder();
     }
-    /*
-    * returns the fx file chooser version
-    * @Param: Stage of current fx application
+    /**
+     * Makes a XMLTypeBuilder that uses JavaFX File Chooser for aggregate operations.
+    * @param stage Stage of current fx application
+    * @return the fx file chooser XMLTypeBuilder version
     * */
     @Override
     public XMLTypeBuilder fxFileChooser(Stage stage)
     {
       return new XMLTypeBuilder(stage);
     }
-    /*
-    * returns the url version
-    * @Param: url holding the data on internet
+    /**
+     * Makes a XMLTypeBuilder that uses the URL Argument to load data from
+    * @param url URL holding the data location on internet
+    * @return the url XMLTypeBuilder version
     * */
     @Override
     public XMLTypeBuilder url(URL url) {
       return new XMLTypeBuilder(url);
     }
-    /*
-    * returns the filepath version
-    * @Param: file path of file holding the data
+    /**
+     * Makes a XMLTypeBuilder that uses the filePath String to load file locally
+    * @param filePath String that has the file path of file holding the data on disk.
+    * @return the filepath XMLTypeBuilder version
     * */
     @Override
     public XMLTypeBuilder filePath(String filePath) {
       return new XMLTypeBuilder(filePath);
     }
-    /*
-    * returns file version
-    * @Param: File holding the data on disk
+    /**
+     * Makes a XMLTypeBuilder that uses the File object to load data locally.
+    * @param file File holding the data on disk
+    * @return file XMLTypeBuilder version
     * */
     @Override
     public XMLTypeBuilder file(File file) {
       return new XMLTypeBuilder(file);
     }
 
-    /*
+    /**
+     * <h1>XMLTypeBuilder</h1>
     * a utility static class that eventually is the one that creates the required
     * actual type parser, using the loadType field to load the data in the specified way
     * */
@@ -224,6 +266,10 @@ public class DataParserBuilder {
         super(usedLoad,filePath,stage,url,file);
       }
 
+      /**
+       * Makes the EarthQuakesParser Using the corresponding Version of XMLTypeBuilder.
+       * @return EarthQuakesParser to parse the data using your chosen way of locating it.
+       */
       public EarthQuakesParser earthquakes()
       {
         switch(this.getUsedLoad())
@@ -241,10 +287,14 @@ public class DataParserBuilder {
 
   }
 
-  /*
+  /** <h1>CSVBuilder</h1>
    * A utility class made as static class for package streamlining and it is responsible for the
    * creating of the required CSVParser type using it's methods choosing a way of loading of data
    * then using its static class CSVTypeBuilder to build the required type
+   * @author Hisham Maged
+   * @version 1.1
+   * @since 23/7/2019
+   * @see CSVTypeBuilder
    * */
   public static class CSVBuilder implements Buildable{
 
@@ -254,48 +304,54 @@ public class DataParserBuilder {
      * */
     private CSVBuilder(){}
 
-    /*
-     * returns the swing file chooser version
+    /**
+     * Makes a CSVTypeBuilder that uses Swing File Chooser for aggregate operations
+     * @return the swing file chooser CSVTypeBuilder version
      * */
     @Override
     public CSVTypeBuilder swingFileChooser() {
       return new CSVTypeBuilder();
     }
-    /*
-     * returns the fx file chooser version
-     * @Param: Stage of current fx application
+    /**
+     * Makes a CSVTypeBuilder that uses JavaFX File Chooser for aggregate operations.
+     * @param stage Stage of current fx application
+     * @return the fx file chooser CSVTypeBuilder version
      * */
     @Override
     public CSVTypeBuilder fxFileChooser(Stage stage) {
       return new CSVTypeBuilder(stage);
     }
-    /*
-     * returns the url version
-     * @Param: url holding the data on internet
+    /**
+     * Makes a CSVTypeBuilder that uses the URL Argument to load data from
+     * @param url URL holding the data location on internet
+     * @return the url CSVTypeBuilder version
      * */
     @Override
     public CSVTypeBuilder url(URL url) {
       return new CSVTypeBuilder(url);
     }
-    /*
-     * returns the filepath version
-     * @Param: file path of file holding the data
+    /**
+     * Makes a CSVTypeBuilder that uses the filePath String to load file locally
+     * @param filePath String that has the file path of file holding the data on disk.
+     * @return the filepath CSVTypeBuilder version
      * */
     @Override
     public CSVTypeBuilder filePath(String filePath) {
       return new CSVTypeBuilder(filePath);
     }
 
-    /*
-     * returns file version
-     * @Param: File holding the data on disk
+    /**
+     * Makes a CSVTypeBuilder that uses the File object to load data locally.
+     * @param file File holding the data on disk
+     * @return file CSVTypeBuilder version
      * */
     @Override
     public CSVTypeBuilder file(File file) {
       return new CSVTypeBuilder(file);
     }
 
-    /*
+    /**
+     * <h1>CSVTypeBuilder</h1>
      * a utility static class that eventually is the one that creates the required
      * actual type parser, using the loadType field to load the data in the specified way
      * */
@@ -357,7 +413,10 @@ public class DataParserBuilder {
         super(usedLoad,filePath,stage,url,file);
       }
 
-
+      /**
+       * Makes the LifeExpectancyParser Using the corresponding Version of CSVTypeBuilder.
+       * @return LifeExpectancyParser to parse the data using your chosen way of locating it.
+       */
       public LifeExpectancyParser lifeExpectancy()
       {
         switch(this.getUsedLoad())
@@ -370,25 +429,43 @@ public class DataParserBuilder {
           default: throw new IllegalArgumentException("This should not happen, happened in CSVTypeBuilder");
         }
       }
+      /**
+       * Makes the AirportParser Using the corresponding Version of CSVTypeBuilder.
+       * @return AirportParser to parse the data using your chosen way of locating it.
+       */
+      public AirportParser airports()
+      {
+        switch(this.getUsedLoad())
+        {
+          case SWING: return new AirportParser();
+          case FX:    return new AirportParser(this.getStage());
+          case URL:   return new AirportParser(this.getUrl());
+          case FILE:  return new AirportParser(this.getFile());
+          case FILE_PATH: return new AirportParser(this.getFilePath());
+          default: throw new IllegalArgumentException("This should not happen, happened in CSVTypeBuilder");
+        }
+      }
     }
 
   }
 
 
-  /*
-  * A utility method made to return the static class XMLBuilder that returns the user specifiying XMLParser type
+  /**
+   * Makes the needed XMLParser type using Aggregate operations.
+  * A utility method made to return the static class XMLBuilder that returns the user specifying XMLParser type
   * in XMLParser hierarchy and the ways of loading of data
-  * @NOPARAM
+  * @return XMLBuilder static class instance that will be used with aggregate operations to get the Data
   * */
   public static XMLBuilder buildXMLParser(){
       return new XMLBuilder();
 
   }
 
-  /*
-   * A utility method made to return the static class CSVBuilder that returns the user specifiying CSVParser type
+  /**
+   * Makes The needed CSVParser type using Aggregate operations.
+   * A utility method made to return the static class CSVBuilder that returns the user specifying CSVParser type
    * in CSVParser hierarchy and the ways of loading of data
-   * @NOPARAM
+   * @return CSVBuilder static class instance that will be used with aggregate operations to get the data.
    *  */
   public static CSVBuilder buildCSVParser()
   {

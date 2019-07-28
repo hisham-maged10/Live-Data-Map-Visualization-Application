@@ -124,7 +124,7 @@ public abstract class AbstractDataParser<T extends DataEntry & Comparable<? supe
   * @return The parsed Data in an unmodefiable container so can't be added to
   * */
   @Override
-  public Iterable<T> getParsedData()
+  public List<T> getParsedData()
   {
     if(this.entries == null || this.entries.isEmpty())
       throw new UnsupportedOperationException("Can't use getParsedData() before using parse method");

@@ -20,6 +20,26 @@ import java.util.Map;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+/**
+ * <h1>WorldDataUtils</h1>
+ * <p>
+ *   A Utility class made for the Data Entries from the World Data Bank Site.
+ *   <ul>
+ *    <li>Makes Country Code Map for the world data bank for a certain year</li>
+ *    <li>Make Markers for World Data Bank entries</li>
+ *    <li>Make PointFeatures for Cities on Map</li>
+ *    <li>Make PointFeatures for Countries on Map</li>
+ *    <li>Make Markers for Cities on Map</li>
+ *    <li>Make Markers for Countries on Map</li>
+ *    <li>Checks if a Point Feature is on land or not</li>
+ *    <li>Checks if a Point Feature </li>
+ *   </ul>
+ * </p>
+ * @author Hisham Maged
+ * @version 1.1
+ * @since 21/7/2019
+ * @see WorldData
+ */
 public class WorldDataUtils {
 
   private static PImage cityMarkerImg;
@@ -37,20 +57,27 @@ public class WorldDataUtils {
   // holds the current applet used, needed in order for the whole class to work correctly
   private static PApplet currentApplet;
 
+  /**
+   * Makes the Class use the Applet of UnfoldingMap, Should be first method to be invoked.
+   * and without doing so, all methods
+   * will throw Unsupported Operation Exception
+   * @param applet current used applet
+   */
   public static void useApplet(PApplet applet)
   {
     WorldDataUtils.currentApplet = applet;
     WorldDataUtils.initializeImages();
   }
 
-  /*
-   * method can't be used if given Iterable is null throwing UnsupportedOperationException
-   * takes the Iterable of WorldData Records and uses it to output a Map<String,Float>  where key is Country Code
+  /**
+   * Takes the Iterable of WorldData Records and uses it to output a Map<String,Float>.  where key is Country Code
    * and Value is Life Expectancy for given year parameter that will be used by the Map
    * with Geographical locations to make a map out of it with needed value is values for the given year
-   * @PARAM Iterable<? extends WorldBank> holding data of each record in the parsed CSV file
-   * @PARAM year needed for the values, must be valid year between 1960 to 2017 inclusive
-   * @NotNullable, @NOTEMPTY list
+   * @param data Iterable holding type of WorldData holding data of each record in the parsed CSV file
+   * @param year needed for the values, must be valid year between 1960 to 2017 inclusive
+   * @throws UnsupportedOperationException if No Applet is used by the class or data given is null
+   * @throws IllegalArgumentException if year isn't between 1960 to 2017
+   * @return Map containing Country Code as its key and needed Value as it's value
    * */
   public static Map<String,Float> toCountryCodeMap(Iterable<? extends WorldData> data, int year)
   {
@@ -68,8 +95,8 @@ public class WorldDataUtils {
   }
 
 
-  /*
-   * Make markers Method that takes the current PApplet, map that will be used to make markers from using the country and it's value
+  /**
+   * Makes markers Method that takes the current PApplet, map that will be used to make markers from. using the country and it's value
    * key: Country ID
    * and float value as Value assigned to that country id
    * initializes the countryFeatures List of the WorldDataUtils once as it's the same for all data
@@ -78,9 +105,11 @@ public class WorldDataUtils {
    * sent , to color the markers with shades of blue and red using the matching
    * ID value with year expectancy
    * then shading the colors of the markers made
-   * @Param Map<String, Float> that holds the country code and value associated to it
-   * @Param: float that represents the starting value of the input range that the value of map is in to be mapped to a valie between 0 to 255
-   * @Param: float that represents the ending value of the input range that the value of map is in to be mapped to a valie between 0 to 255
+   * @param map Map<String, Float> that holds the country code and value associated to it
+   * @param inputRangeStart float that represents the starting value of the input range that the value of map is in to be mapped to a valie between 0 to 255
+   * @param inputRangeEnd float that represents the ending value of the input range that the value of map is in to be mapped to a valie between 0 to 255
+   * @throws UnsupportedOperationException if No Applet is used by the class or data given is null
+   * @return List of Markers due to the given Map containing countries and their values due to World Bank
    * */
   public static List<Marker> makeWorldDataMarkers(Map<String,Float> map,float inputRangeStart,float inputRangeEnd)
   {
@@ -166,10 +195,12 @@ public class WorldDataUtils {
     return year >= 1960 && year <=2017;
   }
 
-  /*
-  * Loads the data of country json into countryFeatures private field only once, then returns the same list each time
+  /**
+  * Loads the data of country json into countryFeatures private field only once, then returns the same list each time.
   * returns an unmodefiable list of features so it becomes secure in case of reference sharing, the currentApplet object must be made first using the useApplet method
-  * */
+  * @throws UnsupportedOperationException if No Applet is used by class
+   * @return List of Features of Countries
+   * */
   public static List<Feature> getCountryFeatures()
   {
     isAppletMade();
@@ -178,9 +209,11 @@ public class WorldDataUtils {
     else
       return WorldDataUtils.countryFeatures;
   }
-  /*
-   * Loads the data of city json into countryFeatures private field only once, then returns the same list each time
+  /**
+   * Loads the data of city json into countryFeatures private field only once, then returns the same list each time.
    * returns an unmodefiable list of features so it becomes secure in case of reference sharing, the currentApplet object must be made first using the useApplet method
+  * @throws UnsupportedOperationException if No Applet is used by class
+   * @return List of Features of Cities
    * */
   public static List<Feature> getCityFeatures()
   {
@@ -191,10 +224,10 @@ public class WorldDataUtils {
       return Collections.unmodifiableList(WorldDataUtils.cityFeatures);
   }
 
-  /*
-   * makes the List<Marker> of countryMarkers only once, then returns the same list each time
-   * returns an unmodefiable list of Markers so it becomes secure in case of reference sharing
-   * @Param: PApplet current pApplet used
+  /**
+   * Makes the List<Marker> of countryMarkers only once, then returns the same list each time.
+   * @throws UnsupportedOperationException if no Applet is used by class
+   * @return an unmodefiable list of Markers so it becomes secure in case of reference sharing
    * */
   public static List<Marker> getCountryMarkers()
   {
@@ -204,10 +237,10 @@ public class WorldDataUtils {
       return WorldDataUtils.countryMarkers;
   }
 
-  /*
-   * makes the List<Marker> of cityMarkers only once, then returns the same list each time
-   * returns an unmodefiable list of Markers so it becomes secure in case of reference sharing
-   * @Param: PApplet current pApplet used
+  /**
+   * Makes the List<Marker> of cityMarkers only once, then returns the same list each time
+   * @throws UnsupportedOperationException if no Applet is used by class
+   * @return an unmodefiable list of Markers so it becomes secure in case of reference sharing
    * */
   public static List<Marker> getCityMarkers()
   {
@@ -218,7 +251,8 @@ public class WorldDataUtils {
       return WorldDataUtils.cityMarkers;
   }
 
-  /*
+  /**
+   * Checks whether a PointFeature is on land or not
    * A location is on land if it's in some country, luckily
    * we have a List<Feature> representing countries locations as features
    * so we can use it, to determine that an earthquake which is represented as a pointfeature
@@ -239,8 +273,8 @@ public class WorldDataUtils {
    * loops over the country markers made by the List<Feature> of countries from geoReader checking if one of them returns true
    * to that location, this is done by looping over each marker in the countryMarkers and checking if the location is inside the marker location
    * using the isInCountry private method
-   * @Paran: PointFeature of location
-   * returns true if isInCountry ever returned true in loop, false otherwise
+   * @param location PointFeature of location
+   * @return True if PointFeature is on land, false otherwise
    * */
   public static boolean isLand(PointFeature location)
   {
@@ -268,7 +302,7 @@ public class WorldDataUtils {
    * @Param: PointFeature location to be checked whether it's in a country or not
    * @Param: marker representing the country from the List<Marker> made by MapUtils.(List<feature> of geoJsonReader)
    * */
-  public static boolean isInCountry(PointFeature location, Marker country)
+  private static boolean isInCountry(PointFeature location, Marker country)
   {
     Location currLocation = location.getLocation();
 

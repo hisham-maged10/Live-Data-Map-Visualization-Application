@@ -23,6 +23,7 @@ import org.apache.commons.csv.CSVRecord;
 /**
  * <h1>LifeExpectancyParser</h1> parses the CSV format files of World bank data site
  * that makes statistics about Life expectancy from 1960 to 2017 inclusive
+ * <b> Should be instansiated using DataParserBuilder class only </b>
  * @author Hisham Maged
  * @version 1.1
  * @since 21/7/2019
