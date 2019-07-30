@@ -81,24 +81,6 @@ public class CityMarker extends AbstractLocationMarker {
   }
 
   /**
-   * Get city name of this city Marker
-   * @return String of City Name
-   */
-  public String getCityName()
-  {
-    return getStringProperty("name");
-  }
-
-  /**
-   * Gets country name of this City Marker
-   * @return Country Name
-   */
-  public String getCountry()
-  {
-    return getStringProperty("country");
-  }
-
-  /**
    * Gets population of this city in millions
     * @return Population of this city in millions as a float
    */

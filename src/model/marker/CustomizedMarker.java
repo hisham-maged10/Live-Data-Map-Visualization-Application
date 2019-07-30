@@ -35,4 +35,5 @@ public interface CustomizedMarker {
    * @param y float y-coordinate
    */
   public void showTitle(PGraphics pg, float x, float y);
+
 }

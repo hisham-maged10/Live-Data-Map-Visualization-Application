@@ -63,4 +63,23 @@ public abstract class AbstractLocationMarker extends SimplePointMarker implement
       pg.popStyle();
     }
   }
+
+  /**
+   * Get city name of this city Marker
+   * @return String of City Name
+   */
+  public String getCityName()
+  {
+    return getStringProperty("name");
+  }
+
+  /**
+   * Gets country name of this City Marker
+   * @return Country Name
+   */
+  public String getCountry()
+  {
+    return getStringProperty("country");
+  }
+
 }

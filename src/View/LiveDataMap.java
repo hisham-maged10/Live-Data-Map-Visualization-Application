@@ -8,6 +8,7 @@ package view;
 import controller.DataUtils;
 import controller.EarthQuakeUtils;
 import controller.EarthQuakeUtils.EarthQuakeFilter;
+import controller.MarkerUtils;
 import controller.WorldDataUtils;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.geo.Location;
@@ -16,9 +17,9 @@ import de.fhpotsdam.unfolding.marker.Marker;
 import de.fhpotsdam.unfolding.providers.AbstractMapProvider;
 import de.fhpotsdam.unfolding.providers.Microsoft;
 import de.fhpotsdam.unfolding.utils.MapUtils;
-import de.fhpotsdam.unfolding.utils.ScreenPosition;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javafx.application.Platform;
@@ -47,6 +48,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import model.marker.AbstractEarthQuakeMarker;
+import model.marker.AirportMarker;
 import model.marker.CityMarker;
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -57,14 +59,12 @@ public class LiveDataMap extends PApplet {
 
   /* private ENUM made to choose a map (in case of earthquakes, to choose a coloring sequence)*/
   private enum Map {
-    EARTHQUAKES, LIFEEXPECTANCY;
+    EARTHQUAKES, LIFE_EXPECTANCY, AIRPORTS, CITIES;
   }
 
   private enum LiveDatachoice {
     LAST_DAY, LAST_HOUR, LAST_WEEK, LAST_MONTH;
   }
-  //TODO: SOLVE the problem of filtering doesn't change markers as markers are added to city and the previous ones aren't removed
-  //TODO: IMPLEMENT ISAIRPORT() METHOD IN WORLDDATAUTILS, ADD AIRPORT MARKERS METHODS IN DATAUTILS EVERYTHING ELSE FOR AIRPORTS IS DONE
 
   // Used Map reference
   private UnfoldingMap map;
@@ -78,9 +78,15 @@ public class LiveDataMap extends PApplet {
   private List<Marker> cityMarkers;
   //LifeExpectancy Map reference
   private UnfoldingMap lifeExpectancyMap;
+  // Airports Map reference
+  private UnfoldingMap airportsMap;
+  // used airportsMarkers reference
+  private List<Marker> airportsMarkers;
+  // used airportsMarkers reference
+  private List<Marker> airportRoutesMarkers;
+  // City Map reference
+  private UnfoldingMap citiesMap;
 
-  // private List<ScreenPosition> holding the markers of earthquake magnitudes to be customized in draw
-  private List<ScreenPosition> magnitudeScreenPositions;
 
 
   private PImage cityMarkerImg;
@@ -96,8 +102,9 @@ public class LiveDataMap extends PApplet {
    * */
 
   private static final char MAGNITUDE_EARTHQUAKES_KEY = '1';
-  private static final char DEPTH_EARTHQUAKES_KEY = '2';
-  private static final char LIFE_EXPECTANCY_KEY = '3';
+  private static final char CITIES_KEY = '2';
+  private static final char AIRPORTS_KEY = '3';
+  private static final char LIFE_EXPECTANCY_KEY = '4';
 
   /*
    * Key choosers for zooming in or out of map
@@ -133,6 +140,10 @@ public class LiveDataMap extends PApplet {
     this.cityMarkerImg = loadImage("data/icon.png");
     this.cityMarkerImg.resize(14, 0);
     initMap();
+    // un comment if u want to sort and print the data of earthquakes in reverse order
+//    List<AbstractEarthQuakeMarker> data = new ArrayList<>(this.earthQuakesMarkers.size());
+//    this.earthQuakesMarkers.forEach(m -> data.add((AbstractEarthQuakeMarker)m));
+//    MarkerUtils.printAndSortMarkers(data,20);
   }
 
   // method that will embedd the PApplet processing into JavaFX Application
@@ -172,16 +183,18 @@ public class LiveDataMap extends PApplet {
 
     // ======================= Map Selection Menu ====================
     Menu mapSelectionMenu = new Menu("Maps"); // making the Map Selection Menu
-    Menu earthQuakeMap = new Menu("Earthquakes"); // earthquake coloring logic selection
-    MenuItem magnitudeEarthQuakes = new MenuItem("Magnitude"); // magnitude map
-    earthQuakeMap.getItems().addAll(magnitudeEarthQuakes);
+    MenuItem earthQuakesMap = new MenuItem("Earthquakes"); // Earthquakes map
+    MenuItem citiesMap = new MenuItem("Cities"); // lifeExpectancyMap
+    MenuItem airportsMap = new MenuItem("Airports"); // lifeExpectancyMap
     MenuItem lifeExpectancyMap = new MenuItem("Life Expectancy"); // lifeExpectancyMap
 
-    magnitudeEarthQuakes.setOnAction(e -> swapMap(Map.EARTHQUAKES));
-    lifeExpectancyMap.setOnAction(e -> swapMap(Map.LIFEEXPECTANCY));
+    earthQuakesMap.setOnAction(e -> swapMap(Map.EARTHQUAKES));
+    citiesMap.setOnAction(e -> swapMap(Map.CITIES));
+    airportsMap.setOnAction(e -> swapMap(Map.AIRPORTS));
+    lifeExpectancyMap.setOnAction(e -> swapMap(Map.LIFE_EXPECTANCY));
 
     mapSelectionMenu.getItems()
-        .addAll(earthQuakeMap, lifeExpectancyMap); // adding map items to map menu
+        .addAll(earthQuakesMap, citiesMap, airportsMap, lifeExpectancyMap); // adding map items to map menu
 
     // ===================== EarthQuake Data Section ====================
     Menu earthQuakeData = new Menu("Earthquakes");
@@ -197,52 +210,52 @@ public class LiveDataMap extends PApplet {
     lastHour.setOnAction(e -> {
       if (confirmFiltering())
         changeData(LiveDatachoice.LAST_HOUR,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
             getFilterDialog()); // for added filters functionality
       else
         changeData(LiveDatachoice.LAST_HOUR,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
     });
 
     lastDay.setOnAction(e -> {
       if (confirmFiltering())
         changeData(LiveDatachoice.LAST_DAY,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
             getFilterDialog()); // for added filters functionality
       else
         changeData(LiveDatachoice.LAST_DAY,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
     });
 
     lastWeek.setOnAction(e -> {
       if (confirmFiltering())
         changeData(LiveDatachoice.LAST_WEEK,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
             getFilterDialog()); // for added filters functionality
       else
         changeData(LiveDatachoice.LAST_WEEK,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
     });
 
     lastMonth.setOnAction(e -> {
       if (confirmFiltering())
         changeData(LiveDatachoice.LAST_MONTH,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
             getFilterDialog()); // for added filters functionality
       else
         changeData(LiveDatachoice.LAST_MONTH,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
     });
 
     // given a Stage because FileChooser of fx needs a stage to be opened from.
     local.setOnAction(e -> {
       if (confirmFiltering())
         changeData(stage,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap,
             getFilterDialog()); // for added filters functionality
       else
         changeData(stage,
-            this.usedMap == Map.LIFEEXPECTANCY ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
+            this.usedMap != Map.EARTHQUAKES ? DEFAULT_EARTHQUAKE_MAP_CHOICE : this.usedMap);
     });
 
     earthQuakeData.getItems().addAll(lastHour, lastDay, lastWeek, lastMonth, local);
@@ -254,7 +267,7 @@ public class LiveDataMap extends PApplet {
 
     localLife.setOnAction(e -> {
       if (chooseLifeExpectancyYear())
-        changeData(Map.LIFEEXPECTANCY);
+        changeData(Map.LIFE_EXPECTANCY);
     });
 
     lifeExpectancyData.getItems().add(localLife);
@@ -323,14 +336,16 @@ public class LiveDataMap extends PApplet {
     MapUtils.createDefaultEventDispatcher(this, this.earthQuakesMap);
     /*
      * if you want to filter the earthquake data, use respected EarthQuakesFilter objects for more info about them
-     * check the EarthQuakeFeedParser static classes
-     * change the 1st parameter in makeEarthQuakeMarkers
+     * check the EarthQuakeUtils static classes in second parameters
+     * change the 1st parameter in makeLocalEarthQuakesMarkers
      * no 1st parameter >> FileChooser to choose ATOM file
      * String >> filePath
      * File >> Atom file object
      * URL >> live data url
      * */
-    this.earthQuakesMarkers = DataUtils.makeLocalEarthQuakesMarkers("./data/2.5_week.atom");
+      // presents Last day's Earthquakes by default, can be changed
+      this.earthQuakesMarkers = DataUtils.makeLastDayEarthQuakesMarkers();
+//    this.earthQuakesMarkers = DataUtils.makeLocalEarthQuakesMarkers("./data/2.5_week.atom");
     this.cityMarkers = DataUtils.makeCityMarkers();
 
     this.earthQuakesMap.addMarkers(this.earthQuakesMarkers);
@@ -359,6 +374,36 @@ public class LiveDataMap extends PApplet {
     this.lifeExpectancyMap.setZoomRange(3, 20);
     this.lifeExpectancyMap.setPanningRestriction(this.lifeExpectancyMap.getCenter(),
         width / 2f); //makes map centered and doesn't go out of range
+
+    // =========================================== Airports Section ====================================
+    this.airportsMap = new UnfoldingMap(this, 0, 0, 1920, 1080, DEFAULT_PROVIDER);
+    MapUtils.createDefaultEventDispatcher(this, this.airportsMap);
+
+    // makes AirportMarkers
+    this.airportsMarkers = DataUtils.makeLocalAirportMarkers("./data/airports.csv");
+    this.airportRoutesMarkers = DataUtils.makeRouteMarkers("./data/routes.csv");
+    this.airportsMap.addMarkers(this.airportsMarkers);
+    this.airportsMap.zoomToLevel(3);
+    this.airportsMap.setZoomRange(3, 20);
+    this.airportsMap.setPanningRestriction(this.airportsMap.getCenter(),
+        width / 2f); //makes map centered and doesn't go out of range
+
+
+    // =========================================== Cities Section ====================================
+    this.citiesMap = new UnfoldingMap(this, 0, 0, 1920, 1080, DEFAULT_PROVIDER);
+    MapUtils.createDefaultEventDispatcher(this, this.citiesMap);
+
+    // city markers already made in Earthquake section
+    this.citiesMap.addMarkers(this.cityMarkers);
+    this.citiesMap.zoomToLevel(3);
+    this.citiesMap.setZoomRange(3, 20);
+    this.citiesMap.setPanningRestriction(this.citiesMap.getCenter(),
+        width / 2f); //makes map centered and doesn't go out of range
+
+
+
+
+
 
     this.map = this.earthQuakesMap;
 
@@ -395,15 +440,16 @@ public class LiveDataMap extends PApplet {
    * in between is the range from 40 to 90
    * */
   private void addLegend() {
-    fill(color(230));
-    strokeWeight(3);
-    stroke(0);
-    rect(30, height - 350, 150, 300);
-    textSize(13);
-    fill(color(0));
-    textAlign(LEFT, CENTER);
+
     switch (this.usedMap) {
       case EARTHQUAKES:
+        fill(color(230));
+        strokeWeight(3);
+        stroke(0);
+        rect(30, height - 350, 150, 300);
+        textSize(13);
+        fill(color(0));
+        textAlign(LEFT, CENTER);
         text("Earthquakes", 65, height - 400 + 65);
 
         image(this.cityMarkerImg, 40, height - 400 + 98);
@@ -436,7 +482,15 @@ public class LiveDataMap extends PApplet {
         ellipse(45, height - 400 + 260, 13, 13);
 
         break;
-      case LIFEEXPECTANCY:
+      case LIFE_EXPECTANCY:
+        fill(color(230));
+        strokeWeight(3);
+        stroke(0);
+        rect(30, height - 350, 150, 300);
+        textSize(13);
+        fill(color(0));
+        textAlign(LEFT, CENTER);
+        noStroke();
         text("Life Expectancy", 50, height - 350 + 75);
         text("Low shade", 60, height - 350 + 210);
         text("High shade", 60, height - 350 + 120);
@@ -445,6 +499,7 @@ public class LiveDataMap extends PApplet {
         fill(color(0, 0, 255));
         ellipse(45, height - 350 + 115, 18, 18);
         break;
+
     }
 
   }
@@ -460,8 +515,16 @@ public class LiveDataMap extends PApplet {
         this.usedMap = Map.EARTHQUAKES;
         this.map = this.earthQuakesMap;
         break;
-      case LIFEEXPECTANCY:
-        this.usedMap = Map.LIFEEXPECTANCY;
+      case AIRPORTS:
+        this.usedMap = Map.AIRPORTS;
+        this.map = this.airportsMap;
+        break;
+      case CITIES:
+        this.usedMap = Map.CITIES;
+        this.map = this.citiesMap;
+        break;
+      case LIFE_EXPECTANCY:
+        this.usedMap = Map.LIFE_EXPECTANCY;
         this.map = this.lifeExpectancyMap;
         break;
     }
@@ -501,6 +564,7 @@ public class LiveDataMap extends PApplet {
           switch (choice) {
             case LAST_DAY:
               this.earthQuakesMarkers = DataUtils.makeLastDayEarthQuakesMarkers(filters);
+
               break;
             case LAST_HOUR:
               this.earthQuakesMarkers = DataUtils.makeLastHourEarthQuakesMarkers(filters);
@@ -512,9 +576,11 @@ public class LiveDataMap extends PApplet {
               this.earthQuakesMarkers = DataUtils.makeLastWeekEarthQuakesMarkers(filters);
               break;
           }
-          ;
+          this.map.getDefaultMarkerManager().clearMarkers();
+          this.map.addMarkers(this.earthQuakesMarkers);
+          this.map.addMarkers(this.cityMarkers);
           break;
-        case LIFEEXPECTANCY:
+        case LIFE_EXPECTANCY:
 //          this.lifeExpectancyMarkers = DataUtils //TODO: figure it out
 //              .makeLiveLifeExpectancyMarkers(url, LIFE_EXPECTANCY_YEAR);
           break;
@@ -542,8 +608,11 @@ public class LiveDataMap extends PApplet {
         // same markers, same case
         case EARTHQUAKES:
           this.earthQuakesMarkers = DataUtils.makeLocalEarthQuakesMarkers(filters);
+          this.map.getDefaultMarkerManager().clearMarkers();
+          this.map.addMarkers(this.earthQuakesMarkers);
+          this.map.addMarkers(this.cityMarkers);
           break;
-        case LIFEEXPECTANCY:
+        case LIFE_EXPECTANCY:
           this.lifeExpectancyMarkers = DataUtils
               .makeLocalLifeExpectancyMarkers("./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",
                   LIFE_EXPECTANCY_YEAR);
@@ -572,8 +641,11 @@ public class LiveDataMap extends PApplet {
         // same markers, same case
         case EARTHQUAKES:
           this.earthQuakesMarkers = DataUtils.makeLocalEarthQuakesMarkers(stage, filters);
+          this.map.getDefaultMarkerManager().clearMarkers();
+          this.map.addMarkers(this.earthQuakesMarkers);
+          this.map.addMarkers(this.cityMarkers);
           break;
-        case LIFEEXPECTANCY:
+        case LIFE_EXPECTANCY:
           this.lifeExpectancyMarkers = DataUtils
               .makeLocalLifeExpectancyMarkers("./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",
                   LIFE_EXPECTANCY_YEAR);
@@ -600,9 +672,13 @@ public class LiveDataMap extends PApplet {
       switch (map) {
         // same markers, same case
         case EARTHQUAKES:
+          markers = DataUtils.filterMarkers(filters);
           this.earthQuakesMarkers = markers;
+          this.map.getDefaultMarkerManager().clearMarkers();
+          this.map.addMarkers(this.earthQuakesMarkers);
+          this.map.addMarkers(this.cityMarkers);
           break;
-        case LIFEEXPECTANCY:
+        case LIFE_EXPECTANCY:
           this.lifeExpectancyMarkers = DataUtils
               .makeLocalLifeExpectancyMarkers("./data/API_SP.DYN.LE00.IN_DS2_en_csv_v2_40967.csv",
                   LIFE_EXPECTANCY_YEAR);
@@ -808,7 +884,7 @@ public class LiveDataMap extends PApplet {
     grid.add(new Label("Lowerlimit Depth Filter:"), 4, 2);
     grid.add(moreDepth, 5, 2);
 
-    grid.add(rangeDepthR, 3, 2);
+    grid.add(rangeDepthR, 3, 3);
     grid.add(new Label("Range Depth Filter:"), 4, 3);
     grid.add(rangeDepth, 5, 3);
 
@@ -887,6 +963,8 @@ public class LiveDataMap extends PApplet {
     // return the result in form of optional
     Optional<Pair<EarthQuakeFilter, EarthQuakeFilter>> result = dialog.showAndWait();
 
+//    System.out.println(result.get().getKey());
+//    System.out.println(result.get().getValue());
     // if optional is present then return a new array of two elements, first of magnitude filter, second of depth filter
     return result.isPresent() ?
         new EarthQuakeFilter[]{result.get().getKey(), result.get().getValue()} :
@@ -903,7 +981,7 @@ public class LiveDataMap extends PApplet {
       return;
     }
     // no conditional expression on 2nd parameter as made sure from if condition that it's earthquake map
-    changeData(DataUtils.lastMadeEarthQuakesMarkers, this.usedMap, getFilterDialog());
+    changeData(this.earthQuakesMarkers, this.usedMap, getFilterDialog()); //TODO: find out another way instead of passing an unusable parameter
 
   }
 
@@ -917,7 +995,7 @@ public class LiveDataMap extends PApplet {
   /*
    * Key pressed functionality that changes between the earthquake map and life expectancy map
    * using final char MAGNITUDE_EARTHQUAKES_KEY for magnitude earthquake data
-   * using final char DEPTH_EARTHQUAKES_KEY for depth earthquake data
+   * using final char AIRPORTS_KEY for depth earthquake data
    * using final char LIFE_EXPECTANCY_KEY for life expectancy data
    * zooms in map and out of it using ZOOM_IN_KEY and ZOOM_OUT_KEY at the mouse location
    * */
@@ -927,9 +1005,16 @@ public class LiveDataMap extends PApplet {
         this.map = this.earthQuakesMap;
         this.usedMap = Map.EARTHQUAKES;
         break;
-
+      case CITIES_KEY:
+        this.usedMap = Map.CITIES;
+        this.map = this.citiesMap;
+        break;
+      case AIRPORTS_KEY:
+       this.usedMap = Map.AIRPORTS;
+       this.map = this.airportsMap;
+       break;
       case LIFE_EXPECTANCY_KEY:
-        this.usedMap = Map.LIFEEXPECTANCY;
+        this.usedMap = Map.LIFE_EXPECTANCY;
         this.map = this.lifeExpectancyMap;
         break;
 
@@ -960,15 +1045,38 @@ public class LiveDataMap extends PApplet {
 
   @Override
   public void mouseMoved() {
-    if (this.usedMap == Map.EARTHQUAKES) {
-      if (hoveredOnMarker != null) {
-        hoveredOnMarker.setSelected(false);
-        hoveredOnMarker = null;
-      }
 
-      selectMarkerHover(this.earthQuakesMarkers);
-      selectMarkerHover(this.cityMarkers);
+    switch(this.usedMap)
+    {
+      case EARTHQUAKES:
+        if (hoveredOnMarker != null) {
+          hoveredOnMarker.setSelected(false);
+          hoveredOnMarker = null;
+        }
+
+        selectMarkerHover(this.earthQuakesMarkers);
+        selectMarkerHover(this.cityMarkers);
+        break;
+      case CITIES:
+        if (hoveredOnMarker != null) {
+          hoveredOnMarker.setSelected(false);
+          hoveredOnMarker = null;
+        }
+
+        selectMarkerHover(this.cityMarkers);
+
+        break;
+      case AIRPORTS:
+        if (hoveredOnMarker != null) {
+          hoveredOnMarker.setSelected(false);
+          hoveredOnMarker = null;
+        }
+
+        selectMarkerHover(this.airportsMarkers);
+        break;
     }
+
+
   }
 
 
@@ -996,6 +1104,17 @@ public class LiveDataMap extends PApplet {
           doMouseReleaseEarthQuakeMarker();
         } else if (hoveredOnMarker.getClass() == CityMarker.class) {
           doMouseReleaseCityMarker();
+        }
+      }
+    }else if(this.usedMap == Map.AIRPORTS)
+    {
+      if (hoveredOnMarker == null) { // if null then cursor is not inside marker
+        this.makeMarkersVisible();
+      }else{
+        if(hoveredOnMarker instanceof AirportMarker)
+        {
+          // shows routes as lines from source which is the clicked on marker to all destinations
+          doMouseReleaseAirportMarker();
         }
       }
     }
@@ -1055,6 +1174,11 @@ public class LiveDataMap extends PApplet {
       });
       this.cityMarkers.forEach(m -> m.setHidden(false));
 
+    }else if(this.usedMap == Map.AIRPORTS)
+    {
+      this.map.getDefaultMarkerManager().clearMarkers();
+      this.airportsMarkers.forEach(m->m.setHidden(false));
+      this.map.addMarkers(this.airportsMarkers);
     }
   }
 
@@ -1122,5 +1246,31 @@ public class LiveDataMap extends PApplet {
           });
     }
 
+  }
+  // draws lines from source to other airports if a route exists between them
+  private void doMouseReleaseAirportMarker()
+  {
+    if(hoveredOnMarker !=null)
+    {
+      this.airportsMarkers.forEach(m->{
+        if(m != hoveredOnMarker)
+          m.setHidden(true);
+      });
+
+      List<Marker> routes = new ArrayList<>();
+      this.airportRoutesMarkers.forEach(
+        m->{
+          if(hoveredOnMarker.getId().equalsIgnoreCase(m.getStringProperty("source")))
+            routes.add(m);
+        });
+
+      for(Marker route : routes)
+      {
+        for(Marker airport : this.airportsMarkers)
+          if(airport.getId().equalsIgnoreCase(route.getStringProperty("destination")))
+            airport.setHidden(false);
+      }
+      this.map.addMarkers(routes);
+    }
   }
 }

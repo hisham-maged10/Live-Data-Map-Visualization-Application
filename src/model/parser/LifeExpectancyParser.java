@@ -69,7 +69,7 @@ public class LifeExpectancyParser extends AbstractCSV<LifeExpectancyEntry> {
   /**
    * File Consturctor. that will use the AbstactCSV constructor to validate the file
    * to be of correct extension and such and then makes the InputStream object using it
-   * @param File pointing to file object in memory
+   * @param file File pointing to file object in memory
    * @throws IllegalArgumentException if invalid file was given (null or doesn't exist or not of correct format).
    * */
   public LifeExpectancyParser(File file) {
@@ -80,7 +80,7 @@ public class LifeExpectancyParser extends AbstractCSV<LifeExpectancyEntry> {
    * URL Constructor. that will use the AbstactCSV constructor that will use the AbstractDataParser
    * Constructor to validate the URL of given url link using the private Static final Pattern that validates
    * the url to be of specified location
-   * @param Url holding the data needed
+   * @param url Url holding the data needed
    * @throws IllegalArgumentException if invalid URL was given.
    * */
   public LifeExpectancyParser(URL url) {
@@ -105,15 +105,18 @@ public class LifeExpectancyParser extends AbstractCSV<LifeExpectancyEntry> {
   public LifeExpectancyParser parse()
   {
     try {
+        System.out.print("getting Life expectancy data");
       CSVParser parser = CSVParser.parse(this.getSource(), Charset.defaultCharset(), CSVFormat.DEFAULT.withFirstRecordAsHeader());
       for(CSVRecord record : parser.getRecords())
       {
+        System.out.print(".");
         this.addPojo(new LifeExpectancyEntry(
             record.get(0), // using the name for country name doesn't work // TODO: figure out why
             record.get("Country Code"),
             fillMap(new HashMap<>(57),record) // makes a Map of initialy capacity 57 holding 57 year data, Integer as key for year and float for lifeexpectancy value
         ));
       }
+      System.out.println();
     return this; // returns true since the loop finished without exceptions
     }catch(IOException ex)
     {

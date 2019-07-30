@@ -4,6 +4,9 @@ package model.marker;/*
   Project Name : 
 */
 
+import static processing.core.PConstants.CORNER;
+import static processing.core.PConstants.LEFT;
+
 import de.fhpotsdam.unfolding.data.Feature;
 import de.fhpotsdam.unfolding.geo.Location;
 import processing.core.PGraphics;
@@ -41,6 +44,7 @@ public class AirportMarker extends AbstractLocationMarker {
    */
   public AirportMarker(Feature place) {
     super(place);
+    this.setId(place.getId());
   }
 
   /**
@@ -52,7 +56,9 @@ public class AirportMarker extends AbstractLocationMarker {
    */
   @Override
   public void drawMarker(PGraphics pg, float x, float y) {
-
+    pg.fill(255,0,0);
+    pg.noStroke();
+    pg.circle(x,y,5);
   }
 
   /**
@@ -64,6 +70,34 @@ public class AirportMarker extends AbstractLocationMarker {
    */
   @Override
   public void showTitle(PGraphics pg, float x, float y) {
-
+    pg.fill(245,240,208);
+    pg.noStroke();
+    pg.rectMode(CORNER);
+    pg.textSize(12);
+    String desc = getCityName()+" , "+getCountry()+" , Code: "+getCode()+" , TMZ: "+getTimeZone()+" UTC";
+    pg.rect(x,y-20,pg.textWidth(desc)+10,20);
+    pg.textAlign(LEFT);
+    pg.fill(0);
+    pg.text(desc,x+5,y-7);
   }
+
+  /**
+   * Gets the 3-letter IATA Code for the Airport
+   * @return 3-Letter IATA code for the Airport.
+   */
+  public String getCode()
+  {
+    return this.getStringProperty("code");
+  }
+
+  /**
+   * Gets the Timezone of Airport
+   * @return Timezone of Airport
+   */
+  public String getTimeZone()
+  {
+    return this.getStringProperty("timezone");
+  }
+
+
 }

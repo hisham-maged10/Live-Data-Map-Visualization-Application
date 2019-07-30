@@ -66,7 +66,7 @@ public class EarthQuakesParser extends AbstractXML<EarthQuakeEntry>{
   /**
   * File Consturctor. that will use the AbstractXML constructor to validate the file
   * to be of correct extension and such and then makes the InputStream object using it
-  * @param File pointing to file object in memory
+  * @param file File pointing to file object in memory
   * @throws IllegalArgumentException if invalid file was given (null or doesn't exist or not of correct format).
   * */
   public EarthQuakesParser(File file) {
@@ -77,7 +77,7 @@ public class EarthQuakesParser extends AbstractXML<EarthQuakeEntry>{
   * URL Constructor. that will use the AbstractXML constructor that will use the AbstractDataParser
   * Constructor to validate the URL of given url link using the private Static final Pattern that validates
   * the url to be of specified location
-  * @param Url holding the data needed
+  * @param url Url holding the data needed
   * @throws IllegalArgumentException if invalid URL was given.
   * */
   public EarthQuakesParser(URL url) {
@@ -101,6 +101,7 @@ public class EarthQuakesParser extends AbstractXML<EarthQuakeEntry>{
   {
     try {
       System.out.println("Using InputStream: "+this.getSource().toString());
+        System.out.print("getting EarthQuake data");
       Document xmlFile = DocumentBuilderFactory.newInstance() // making a document object for XML file and parsing it
           .newDocumentBuilder().parse(this.getSource());
       xmlFile.getDocumentElement().normalize(); // removing white spaces and such
@@ -109,6 +110,7 @@ public class EarthQuakesParser extends AbstractXML<EarthQuakeEntry>{
       Element tempElement = null;
       // main loop for filling pojo objects
       for (int i = 0, n = entries.getLength(); i < n; ++i) {
+        System.out.print(".");
         tempEntry = entries.item(i);
         if (tempEntry.getNodeType() == Node.ELEMENT_NODE) {
           tempElement = (Element) tempEntry;
@@ -120,6 +122,7 @@ public class EarthQuakesParser extends AbstractXML<EarthQuakeEntry>{
           ));
         }
       }
+      System.out.println();
       return this; // returns true if loop is finished meaning no exceptions happened
     }catch(Exception ex)
     {

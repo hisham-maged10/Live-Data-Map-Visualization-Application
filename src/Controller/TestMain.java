@@ -6,6 +6,9 @@ package controller;/*
 
 import processing.core.PApplet;
 
+/**
+ * The Class that the Program should run from.
+ */
 public class TestMain {
 
   // A Main Method using the PApplet class to make it run as Application not as an Applet viewer

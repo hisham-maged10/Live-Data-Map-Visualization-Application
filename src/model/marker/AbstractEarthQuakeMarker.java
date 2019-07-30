@@ -18,7 +18,7 @@ import processing.core.PGraphics;
 /**
  * <h1>AbstractEarthQuakeMarker</h1>
  * <p>
- *   Defines the common behaviour of Earth quake markers
+ *   Defines the common behaviour of Earth quake markers and Natural ordering of Earthquake Markers
  * </p>
  * @author Hisham Maged
  * @since 22/7/2019
@@ -27,7 +27,7 @@ import processing.core.PGraphics;
  * @see OceanEarthQuakeMarker
  * @see CustomizedMarker
  */
-public abstract class AbstractEarthQuakeMarker extends SimplePointMarker implements CustomizedMarker{
+public abstract class AbstractEarthQuakeMarker extends SimplePointMarker implements CustomizedMarker, Comparable<AbstractEarthQuakeMarker>{
 
   // shows whether the earthquake marker is on land or on ocean
   private boolean onLand;
@@ -109,11 +109,11 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     // gets magnitude that is stored as object in map and converts it to string using the actual type toString
     // parsing it into a float
     float magnitude = Float.parseFloat(props.get("magnitude").toString());
-    props.put("radius",2*magnitude); // putting radius property to the properties of the feature
+    props.put("radius",2*Math.abs(magnitude)); // putting radius property to the properties of the feature
     //setting the properties of the marker with the added radius properties
     this.setProperties(props);
     // setting value of radius of this marker based on magnitude
-    this.radius = 3F*magnitude;
+    this.radius = 3F*Math.abs(magnitude);
     this.tempRadius = radius; // used in animating of marker if it's from the past day (including past hour earthquakes)
     String tempAge = null;
     // gets the age of the earthquake and if it's in the past day or past hour then makes pastDay to be true
@@ -175,6 +175,16 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   }
 
   /**
+   * Represents this Earthquake Marker using Magnitude, depth, title.
+   * @return String Representation of Marker
+   */
+  @Override
+  public String toString()
+  {
+    return getMagnitude()+" Richter , "+getDepth()+" km, "+getTitle()+(this.onLand ? " , Happened on Land": " , Happened in Ocean");
+  }
+
+  /**
    * Gets the Magnitude of the Earthquake
    * @return Magnitude of the Earthquake
    */
@@ -233,7 +243,7 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
     {
       pg.strokeWeight(9);
       pg.stroke(MODERATE_EARTHQUAKE_COLOR);
-    }else if(depth > LIGHT_DEPTH && depth < MODERATE_DEPTH)
+    }else if(depth >= LIGHT_DEPTH && depth < MODERATE_DEPTH)
     {
       pg.strokeWeight(7);
       pg.stroke(LIGHT_EARTHQUAKE_COLOR);
@@ -329,5 +339,24 @@ public abstract class AbstractEarthQuakeMarker extends SimplePointMarker impleme
   {
     this.citiesInThreatCircle.clear();
   }
+
+  /**
+   * Defines the Natural ordering of Earthquake Markers to be in descending order due to Magnitude.
+   * Does Referential check to check whether it's the same object in memory, if so returns 0 directly for equality
+   * Doesn't accept null throwing NullPointerException
+   * uses Float.compare with reversed arguments to reverse the order of magnitudes
+   * @param anotherEarthquakeMarker
+   * @return
+   */
+  @Override
+  public int compareTo(AbstractEarthQuakeMarker anotherEarthquakeMarker)
+  {
+    if( this == anotherEarthquakeMarker)
+      return 0;
+    if(anotherEarthquakeMarker == null)
+      throw new NullPointerException("Comparable doesn't accept null");
+    return Float.compare(anotherEarthquakeMarker.getMagnitude(),this.getMagnitude());
+  }
+
 
 }

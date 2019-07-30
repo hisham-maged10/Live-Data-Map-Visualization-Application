@@ -5,9 +5,14 @@ package controller;/*
 */
 import de.fhpotsdam.unfolding.data.Feature;
 import de.fhpotsdam.unfolding.data.PointFeature;
+import de.fhpotsdam.unfolding.data.ShapeFeature;
+import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.Marker;
+import de.fhpotsdam.unfolding.marker.SimpleLinesMarker;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import model.marker.AbstractEarthQuakeMarker;
@@ -109,6 +114,49 @@ public class MarkerUtils {
     return locationMarkers;
   }
 
+  /**
+   * Sorts the Markers due to their natural ordering and prints them to the limit given.
+   * uses bounded wild card to increase API Flexability to accept any list of Applicable type Marker that implements Comparable interface.
+   * @param markers List of Markers to be sorted and printed
+   * @param limit int for given limit of earthquakes markers to be printed
+   * */
+  public static <T extends Marker & Comparable<? super T>> void printAndSortMarkers(List<? extends T> markers, int limit){
+    int counter = 0;
+    Collections.sort(markers);
+    for(Marker m : markers)
+    {
+      if(counter < limit) {
+        ++counter;
+        System.out.println(m);
+      }
+    }
 
+  }
+
+  /**
+   * Makes routes Markers depending on the routeFeature list and airport Maps made from AirportUtils.
+   * @param routeFeatures List containing shape features of routes
+   * @param airportsMap Map containing Airport ID as key and Location as value
+   * @return List of route Markers made by simple Line Markers.
+   */
+  public static List<Marker> makeRoutesMarkers(List<ShapeFeature> routeFeatures, Map<Integer, Location> airportsMap)
+  {
+    List<Marker> routesMarkers = new ArrayList<>();
+    for(ShapeFeature routeFeature : routeFeatures)
+    {
+      int source = Integer.parseInt((String) routeFeature.getProperty("source"));
+      int dest = Integer.parseInt((String) routeFeature.getProperty("destination"));
+
+      if(airportsMap.containsKey(source) && airportsMap.containsKey(dest))
+      {
+        routeFeature.addLocation(airportsMap.get(source));
+        routeFeature.addLocation(airportsMap.get(dest));
+      }
+      SimpleLinesMarker line = new SimpleLinesMarker(routeFeature.getLocations(),routeFeature.getProperties());
+
+      routesMarkers.add(line);
+    }
+    return routesMarkers;
+  }
 
 }

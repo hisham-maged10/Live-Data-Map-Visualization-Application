@@ -111,10 +111,13 @@ public class AirportParser extends AbstractCSV<AirportEntry>{
    * */
   @Override
   public DataParser<AirportEntry> parse() {
-    try{
+    try {
+      System.out.println("getting Airport data");
       CSVParser parser = CSVParser.parse(this.getSource(), Charset.defaultCharset(),
           CSVFormat.DEFAULT);
-      for(CSVRecord record : parser.getRecords())
+      for (CSVRecord record : parser.getRecords())
+      {
+        System.out.print(".");
         this.addPojo(new AirportEntry(
             record.get(0), // id
             record.get(1), // name
@@ -127,6 +130,8 @@ public class AirportParser extends AbstractCSV<AirportEntry>{
             record.get(9) //timezone
         ));
 
+    }
+      System.out.println();
     return this;
     }catch(IOException ex)
     {

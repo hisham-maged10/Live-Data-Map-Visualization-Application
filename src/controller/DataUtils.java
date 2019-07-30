@@ -4,9 +4,12 @@ package controller;/*
   Class Desc : A class Made to control the flow of data to the map from all the other classes in the project
 */
 
+import controller.EarthQuakeUtils.DepthLessThanFilter;
 import controller.EarthQuakeUtils.EarthQuakeFilter;
 import de.fhpotsdam.unfolding.data.Feature;
 import de.fhpotsdam.unfolding.data.PointFeature;
+import de.fhpotsdam.unfolding.data.ShapeFeature;
+import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.Marker;
 import java.io.File;
 import java.net.URL;
@@ -15,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import javafx.stage.Stage;
 import model.parser.DataParser;
+import model.pojo.AirportEntry;
 import model.pojo.EarthQuakeEntry;
 import model.pojo.LifeExpectancyEntry;
 
@@ -53,6 +57,9 @@ import model.pojo.LifeExpectancyEntry;
  *         <li> Live Data from World Bank of data </li>
  *       </ul>
  *   </li>
+ *   <li> City Markers</li>
+ *   <li> Airport Markers </li>
+ *   <li> Routes Markers </li>
  * </ul>
  * @author Hisham Maged
  * @version 1.1
@@ -68,10 +75,11 @@ public class DataUtils {
 
 
   /**
-    * Holds unmodefiable list of latest PointFeature made.
+    * Holds unmodefiable list of latest Earthquake entries made.
    */
-  public static List<Marker> lastMadeEarthQuakesMarkers = Collections.EMPTY_LIST; //unmodefiable
+  private static Iterable<EarthQuakeEntry> lastMadeEarthQuakesEntries = Collections.EMPTY_LIST; //unmodefiable
 
+  private static List<PointFeature> lastMadeAirportFeatures = null;
 
   /*
    * String URLS for live earth quake data
@@ -199,6 +207,15 @@ public class DataUtils {
     return DataUtils.getEarthQuakeMarkerFromDataAndFilters(entries,filters);
   }
 
+  /**
+   * Filters the markers by filtering the lastly made earthquake entries and making markers out of them.
+   * @param filters EarthQuakeFilter varargs that holds all the filters given
+   * @return Filtered List of markers that holds the filtered Markers
+   */
+  public static List<Marker> filterMarkers(EarthQuakeFilter... filters)
+  {
+    return getEarthQuakeMarkerFromDataAndFilters(DataUtils.lastMadeEarthQuakesEntries,filters);
+  }
   /*
   * a private helper method that does the common code for earthquakes markers for all making earthquake markers methods
   * @Param:Iterable<EarthQuakeEntry> iterable containing the data of EarthQuakes filled in POJOs
@@ -207,8 +224,9 @@ public class DataUtils {
   private static List<Marker> getEarthQuakeMarkerFromDataAndFilters(Iterable<EarthQuakeEntry> entries,EarthQuakeFilter... filters)
   {
     entries = EarthQuakeUtils.filter(entries,filters); // filters entries
+    lastMadeEarthQuakesEntries = entries;
     List<PointFeature> features = EarthQuakeUtils.toPointFeatures(entries); // makes features due to filtered entries
-    return lastMadeEarthQuakesMarkers = Collections.unmodifiableList(MarkerUtils.makeEarthQuakesMarkers(features)); // equates last made markers to same reference but as unmoedfiable and returns it
+    return MarkerUtils.makeEarthQuakesMarkers(features); // equates last made markers to same reference but as unmoedfiable and returns it
   }
 
   /**
@@ -305,6 +323,43 @@ public class DataUtils {
   }
 
 
+  /**
+   * Makes the Airport markers List<Marker> using a String filePath to get local data
+   * @param filePath String filePath that holds the path of the file on disk
+   * @return List Containing Airport Markers
+   * */
+  public static List<Marker> makeLocalAirportMarkers(String filePath)
+  {
+    DataParser<AirportEntry> parser = DataParserBuilder.buildCSVParser().filePath(filePath).airports().parse();
+    Iterable<AirportEntry> entries = parser.getParsedData();
+    return DataUtils.getAirportMarkerFromData(entries);
+  }
+
+  /*
+   * a private helper method that does the common code for Airport markers for all making earthquake markers methods
+   * @Param:Iterable<AirportEntry> iterable containing the data of Airports filled in POJOs
+   */
+  private static List<Marker> getAirportMarkerFromData(Iterable<AirportEntry> entries)
+  {
+    List<PointFeature> features = AirportUtils.toPointFeatures(entries); // makes features due to filtered entries
+    DataUtils.lastMadeAirportFeatures = features;
+    return Collections.unmodifiableList(MarkerUtils.makeLocationMarkers(features)); // returns as unmoedfiable and
+  }
+
+  /**
+   * Makes the Route Markers for all airports with source property holding the source airport
+   * and destination property holding the destination airport.
+   * @param filePath filePath holding the routes data
+   * @return List of marker whose actual type is SimpleLinesMarker representing routes as lines
+   */
+  public static List<Marker> makeRouteMarkers(String filePath)
+  {
+    if(lastMadeAirportFeatures == null)
+      throw new UnsupportedOperationException("No Airports made to make routes of");
+    List<ShapeFeature> routes = AirportUtils.getAirportRoutes(filePath);
+    Map<Integer, Location> airportsMap = AirportUtils.getAirportsMap(lastMadeAirportFeatures);
+    return MarkerUtils.makeRoutesMarkers(routes,airportsMap);
+  }
 
 
   /*
@@ -322,13 +377,12 @@ public class DataUtils {
     }
   }
 
-//  public static void main(String[] args)
-//  {
-//    DataParser<EarthQuakeEntry> parserTester = DataParserBuilder.buildXMLParser().url(LIVE_EARTHQUAKE_DATA_PAST_30_DAYS).earthquakes();
-//    parserTester.parse();
-//    Iterable<EarthQuakeEntry> iterableTester = parserTester.getParsedData();
-//    iterableTester = EarthQuakeUtils.filter(iterableTester,new MagnitudeMoreThanFilter(5.0,true));
-//    iterableTester.forEach((entry) -> System.out.println(entry));
-//  }
+  public static void main(String[] args)
+  {
+    DataParser<EarthQuakeEntry> parser = DataParserBuilder.buildXMLParser().filePath("./data/2.5_week.atom").earthquakes().parse();
+    Iterable<EarthQuakeEntry> entries = parser.getParsedData();
+    Iterable<EarthQuakeEntry> filtered = EarthQuakeUtils.filter(entries,new DepthLessThanFilter(50.0,true));
+    entries.forEach(System.out::println);
+  }
 
 }

@@ -4,6 +4,7 @@ package controller;/*
   Class desc : A utitility class for EarthQuake data facility methods
 */
 
+import de.fhpotsdam.unfolding.marker.Marker;
 import model.pojo.EarthQuakeEntry;
 import model.pojo.DataEntry;
 import de.fhpotsdam.unfolding.data.PointFeature;
@@ -328,7 +329,7 @@ public class EarthQuakeUtils {
     /**
      * Sole Constructor that takes the upper limit depth as a double and checks
      * against it if it's applicable
-     * @param upperLimitMagnitude double value holding the Upper limit depth
+     * @param upperLimitDepth double value holding the Upper limit depth
      * @param inclusive boolean value to specify whether that upper depth is inclusive or not
      */
     public DepthLessThanFilter(double upperLimitDepth,boolean inclusive)
@@ -534,34 +535,7 @@ public class EarthQuakeUtils {
     return parsedFeatures;
   }
 
-//  /*
-//   *  a static method to make EarthQuake Markers given a List<PointFeature>,
-//   *  that will be used to make a marker per each using the Location of it and its properties
-//   *  @Param: List<PointFeature> a list containing the PointFeatures of each pojo object of earthquake entry can be made by static method
-//   *  toPointFeature of this class
-//   * */
-//
-//  public List<Marker> makeEarthQuakeMarkers(List<PointFeature> features)
-//  {
-//    List<Marker> markers = new ArrayList<>();
-//    SimplePointMarker tempMarker = null; // to hold reference to the newly added marker
-//    for(PointFeature pf : features) {
-//      markers.add((tempMarker = new SimplePointMarker()));
-//      tempMarker.setLocation(pf.getLocation());
-//      tempMarker.setProperties(pf.getProperties());
-//    }
-//
-//    lastMadeEarthQuakesMarkers = Collections.unmodifiableList(features);
-//
-//    return markers;
-//  }
 
-  /*
-  * //TODO: right desc
-  * */
-  public static void printQuakes()
-  {
-    //TODO: implement it
-  }
+
 
 }

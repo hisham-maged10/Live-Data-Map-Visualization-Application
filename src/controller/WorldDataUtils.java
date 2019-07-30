@@ -210,7 +210,7 @@ public class WorldDataUtils {
       return WorldDataUtils.countryFeatures;
   }
   /**
-   * Loads the data of city json into countryFeatures private field only once, then returns the same list each time.
+   * Loads the data of city json into countryFeatures then returns the same unmodefiable list each time and it has a type property to specify that it's a city.
    * returns an unmodefiable list of features so it becomes secure in case of reference sharing, the currentApplet object must be made first using the useApplet method
   * @throws UnsupportedOperationException if No Applet is used by class
    * @return List of Features of Cities
@@ -219,9 +219,20 @@ public class WorldDataUtils {
   {
     isAppletMade();
     if(WorldDataUtils.cityFeatures == null)
-      return WorldDataUtils.cityFeatures = Collections.unmodifiableList(GeoJSONReader.loadData(currentApplet,"./data/city-data.json"));
+      return WorldDataUtils.cityFeatures = Collections.unmodifiableList(putCityType(GeoJSONReader.loadData(currentApplet,"./data/city-data.json")));
     else
-      return Collections.unmodifiableList(WorldDataUtils.cityFeatures);
+      return WorldDataUtils.cityFeatures;
+  }
+
+  /**
+   * Adds the type property to list of features to find out if it's a city or airport later in program.
+   * @param cities List containing Feature made by GeoJSONReader
+   * @return returns the same given list for api flexability to use nested method invokations.
+   */
+  private static List<Feature> putCityType(List<Feature> cities)
+  {
+    cities.forEach( c -> c.putProperty("type","city"));
+    return cities;
   }
 
   /**
@@ -329,9 +340,13 @@ public class WorldDataUtils {
     return false;
   }
 
-  //TODO: implement this method, used in Making of City markers, at the moment
-  public static boolean isAirport(Feature f){
-    return false;
+  /**
+   * Checks if it's an airport or not using the type property added to features in their construction type > city or type > airport.
+   * @param feature a Feature to be checked if it's a city or airport using the Type property
+   * @return True if it's an airport, False otherwise.
+   */
+  public static boolean isAirport(Feature feature){
+    return feature.getStringProperty("type").equalsIgnoreCase("airport");
   }
 
   /*
