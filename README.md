@@ -85,6 +85,6 @@ A Map that visualizes the Life-Expectancy of humans, shading the countries accor
  - Have the **Ability** to **load and visualize** *Life-Expectancy data* from https://data.worldbank.org/ **Mapping** the **values** to **Color values** to **represent** them **on the map** accordingly. (Uses Apache Commons' CSVParser library)
  - **Values** being **represented** where **high Life-Expectancy** *( 90 years old )* **tends** to the **blue shade** while **low Life-Expectancy** **( 45 years old )** **tends** to **the red shade.**
  
-![Life_Mouse](gif/mouse_life)
+![Life_Mouse](gif/mouse_life.gif)
 
 - Can **change** the **Life-Expectancy values** to a **certain year** from **1960 to 2017** *inclusive* **representing** the *Life-Expectancy values* of countries for that year, **the default year used is 2017**.
