@@ -1,7 +1,7 @@
 ﻿## Live Data Visualization Map
 ***Program that takes data input of locations of a certain event representing it in the form of markers***
 ## Earthquakes Section
-![Earthquakes Map](https://drive.google.com/open?id=11BKRXlYppuQljlUrhQ-VBVDI6emAwg1a)
+![Earthquakes Map](gif/map.gif)
  - The **Ability** to **load** and **visualize** Earthquake Data from **USGS's RSS feed** in the **form of Markers** from **USGS** [https://earthquake.usgs.gov/earthquakes](https://earthquake.usgs.gov/earthquakes/map/) as **Live data** including **last hour, last day, last week** and **last month** options or **locally** from your **PC** using a file chooser.
  - The **Ability** to **filter** **data** based on either or both **magnitude** and **depth** criteria with an **upper limit**, **lower limit**, **exact** ***(uses exact floating point comparison)*** or **ranged** filters **on loading of data or anytime after loading data**.
  - **Changing the Earthquake markers' color dynamically** based on their **depth** producing a **light blue** color for **shallow** depth, **yellow** for **moderate** and **red** for **intense**.
