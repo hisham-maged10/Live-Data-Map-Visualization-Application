@@ -11,13 +11,13 @@
 
 **Provide** ***Functionalities* such as:**
 
-![Data_selection](gif/selection.gif)
-
  - **Switching between the types of visualized data.**
 
-![provider_selection](gif/provider.gif)
+![Data_selection](gif/selection.gif)
 
  - **Switching between the Satellite view of the map.**
+
+![provider_selection](gif/provider.gif)
 
 ***By default the Application opens up on Earthquakes' data of the Past-Day.***
 
