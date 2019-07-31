@@ -1,4 +1,4 @@
-## Live Data Visualization Map
+## Live Data Visualization Map [Project's Site](https://hisham-maged10.github.io/Live-Data-Map-Visualization-Application/) [Documentation](https://hisham-maged10.github.io/Live-Data-Map-Visualization-Application/documentation/overview-summary.html)
 ***An Application that takes data input of locations of  certain events representing them in the form of interactive markers***
 
 ## Visualizations
