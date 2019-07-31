@@ -1,11 +1,90 @@
-# Live Data Map Visualization Application
-The program includes the following:The ability to load and visualize Earthquake Data from RSS Feed in the form of markers on the map and changing their color to represent that the earthquake's depth is shallow, moderate or intense and size of marker increases or decreases due to magnitude of earthquake, also the Land Quake Markers are shown as Circles while the Ocean Quakes are shown as Rounded rectangles. The ability to load and visualize City data in the form of markers on the map.
-Both types of markers have clickable functionality where if an earthquake marker is clicked, the program hides all the markers that represents earthquakes and cities except the City Markers that falls in the Threat circle of said Earthquake Marker also plotting a line from the earthquake to said City and if a City Marker is clicked, all Markers gets hidden except the Earthquakes Markers that the City falls in their Threat circle and clicking anywhere in either situation, un-hides all the markers back to their original state. Also all markers shows their title in a small rectangle on hovering on them.
+## Live Data Visualization Map
+***An Application that takes data input of locations of  certain events representing them in the form of interactive markers***
 
+## Visualizations
+***The Map Can Visualize:***
 
+ - Live or Local Earthquake data
+ - Data of Cities
+ - Airports' data
+ - Life-Expectancy of Humans data
 
-    Ability to Load Live Earthquake Data from https://earthquake.usgs.gov/earthquakes/ by making my own Parser Classes ﻿& POJO classes to represent entries of different types all made possible by and Xerces XML Parser library.
-    Added Airports Map that shows Airport Data as Markers and have clickable functionality of showing Routes of th﻿e clicked on airport to all destination airports as Lines, hiding all the other markers except the destination ones and clicking again anywhere will un-hide all markers and hide the route lines, ﻿all Made possible by making my own Airport Parser using Apache's CSVParser and AirportEntry POJO.
-    Added Menu Bar as seen in Screenshot that provides functionalities such as Changing map from Earthquake Map to City Map, Airports Map or Life Expectancy Map, also the ability to change input source of data for earthquakes to be a local file by opening a javaFX File chooser or by selecting to load live data  from earthquake.usgs.gov including last hour, last day, last week, last month and also the ability to change the Map Provider to either road map, hybrid or aerial.
-    Customized the Marker's looks where the last-hour & last-day age earthquakes are animated as radiating circles in case of Land Quakes and radiating Rounded-rectangles in case of Ocean Quakes with no fill, just a stroke and of opacity not solid color using processing's library color method and PGraphics renderer to produce my own customized Marker, also used a Pin icon for City Markers as shown in the Screenshot.
-    Embedding Processing in a JavaFX Application using Processing 3.0+ version.
+**Provide** ***Functionalities* such as:**
+
+![Data_selection](gif/selection.gif)
+
+ - **Switching between the types of visualized data.**
+
+![provider_selection](gif/provider.gif)
+
+ - **Switching between the Satellite view of the map.**
+
+***By default the Application opens up on Earthquakes' data of the Past-Day.***
+
+## 
+
+## Earthquakes Section
+*A Map that visualizes the Earthquake data in the form of interactive markers.*
+***Have the following functionalities:***
+
+![Earthquakes Map](gif/map.gif)
+
+ - **Changing the Earthquake markers' color dynamically** based on their **depth** producing a **light blue** color for **shallow** depth, **yellow** for **moderate** and **red** for **intense**.
+ - The **Increase** or **decrease** of marker's **size** dynamically based on **magnitude**.
+ - **Representation** of **Earthquakes** changing their **shape** based on **where they occurred** where quakes that happened on **land** are in the form of **circles**, while on **ocean** is in the form of **rounded rectangles**.
+ - **Animation** on the **size** of markers if they **occurred** in the **past hour/day** where they appear in **radiating motion**.
+ 
+ ![Data_selection_Earthquake](gif/data_earthquake.gif)
+ 
+ - The **Ability** to **load** and **visualize** Earthquake Data from **USGS's RSS feed** in the **form of Markers** from **USGS** [https://earthquake.usgs.gov/earthquakes](https://earthquake.usgs.gov/earthquakes/map/) as **Live data** including **last hour, last day, last week** and **last month** options or **locally** from your **PC** using a file chooser. ***(Uses Xerces 2 XML Library)***
+
+ ![Filter GIF](gif/filter_earthquake.gif)
+
+ - The **Ability** to **filter** **data** based on either or both **magnitude** and **depth** criteria with an **upper limit**, **lower limit**, **exact** ***(uses exact floating point comparison)*** or **ranged** filters **on loading of data or anytime after loading data**.
+ 
+ ![Interactivitiy_Earthquake](gif/mouse_earthquake.gif)
+ 
+ - **Showing** **information** about the marker on **mouse hover** in the form of **"magnitude, depth, description about its location, age".**
+ - **Clicking** **on** an Earthquake **Marker**, **hides** all **markers** on map **except** the **City** markers that are in its **Threat circle aka Epicenter**, **Plotting** a **line** between the **Earthquake** and the **city or cities it might affect**.
+ - **Clicking** on a **City Marker** hides all **markers except Earthquake Markers that might affect the city.**
+ ## 
+ 
+## Cities Section
+A Map that visualizes the Cities' data in the form of interactive markers.
+***Have the following functionalities:***
+
+![City Map](gif/city.png)
+
+ - The **Ability** to **load and visualize** *cities'* data of **JSON** format.
+ 
+![Mouse_City](gif/mouse_city.gif)
+
+ - Have **mouse interactivity** where **hovering** on a **City** Marker **shows information** about it including **city name, country name, population of city.**
+
+## 
+## Airports Section
+A Map that visualizes the Airports' data in the form of interactive markers.
+***Have the following functionalities:***
+
+![Airport_Map](gif/airport.png)
+
+ - The **Ability** to **load and visualize** *Airport's* data from https://openflights.org/ which holds live Airport data. ***(Uses Apache Commons CSV Parser library)***
+
+![Airport_Mouse](gif/mouse_airport.gif)
+
+ - **Hovering** on **Airport** Marker **shows information** about the airport including **airport name, airport country, ICAO (3-letter code) and Timezone in UTC**
+ - **Clicking** on **Airport** Marker **hides** all **markers** on the map, **showing Lines** from the *clicked on marker* to *other airport markers* **representing** all the **existing routes** from **the clicked on marker as a source** and other visible **airports as destination**, **hiding** all the **airports** that **doesn't have a route**, **Clicking** *elsewhere* **shows all markers** returning the map to its original state.
+
+## 
+## Life-Expectancy Section
+A Map that visualizes the Life-Expectancy of humans, shading the countries accordingly to represent mapped values.
+***Have the following functionalities:***
+
+![Life Expectancy Map](gif/life.png)
+
+ - Have the **Ability** to **load and visualize** *Life-Expectancy data* from https://data.worldbank.org/ **Mapping** the **values** to **Color values** to **represent** them **on the map** accordingly. (Uses Apache Commons' CSVParser library)
+ - **Values** being **represented** where **high Life-Expectancy** *( 90 years old )* **tends** to the **blue shade** while **low Life-Expectancy** **( 45 years old )** **tends** to **the red shade.**
+ 
+![Life_Mouse](gif/mouse_life)
+
+- Can **change** the **Life-Expectancy values** to a **certain year** from **1960 to 2017** *inclusive* **representing** the *Life-Expectancy values* of countries for that year, **the default year used is 2017**.
