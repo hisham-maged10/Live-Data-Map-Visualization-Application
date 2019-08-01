@@ -17,8 +17,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/view/LiveDataMap.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7956">
-              <caret line="518" column="36" selection-start-line="518" selection-start-column="36" selection-end-line="518" selection-end-column="36" />
+            <state relative-caret-position="531">
+              <caret line="346" column="56" selection-start-line="346" selection-start-column="56" selection-end-line="346" selection-end-column="56" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -26,7 +26,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/controller/TestMain.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="221">
@@ -35,52 +35,19 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/view/package-info.java">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/controller/DataUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="3" column="13" selection-start-line="3" selection-start-column="13" selection-end-line="3" selection-end-column="13" />
+            <state relative-caret-position="122">
+              <caret line="90" column="146" lean-forward="true" selection-start-line="90" selection-start-column="73" selection-end-line="90" selection-end-column="146" />
               <folding>
-                <element signature="n#!!doc" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/model/parser/AbstractDataParser.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1530">
-              <caret line="124" column="6" selection-start-line="124" selection-start-column="6" selection-end-line="124" selection-end-column="6" />
-              <folding>
-                <element signature="initializer##0;class#AbstractDataParser#0" />
-                <element signature="method#AbstractDataParser#0;class#AbstractDataParser#0" />
-                <element signature="method#AbstractDataParser#1;class#AbstractDataParser#0" />
-                <element signature="method#AbstractDataParser#2;class#AbstractDataParser#0" />
-                <element signature="method#AbstractDataParser#4;class#AbstractDataParser#0" />
-                <element signature="method#getParsedData#0;class#AbstractDataParser#0" />
-                <element signature="method#addPojo#0;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#init#0;n#AbstractDataParser#0" />
-                <element signature="method#init#0;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#init#1;n#AbstractDataParser#0" />
-                <element signature="method#init#1;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#init#2;n#AbstractDataParser#0" />
-                <element signature="method#init#2;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#isValid#0;n#AbstractDataParser#0" />
-                <element signature="method#isValid#0;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#isValid#1;n#AbstractDataParser#0" />
-                <element signature="method#isValid#1;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#isValid#2;n#AbstractDataParser#0" />
-                <element signature="method#isValid#2;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#isValid#3;n#AbstractDataParser#0" />
-                <element signature="method#isValid#3;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#getExtensionsAsString#0;n#AbstractDataParser#0" />
-                <element signature="method#getExtensionsAsString#0;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#getFile#0;n#AbstractDataParser#0" />
-                <element signature="method#getFile#0;class#AbstractDataParser#0" />
-                <element signature="method#getFile#1;class#AbstractDataParser#0" />
-                <element signature="n#!!doc;n#validateOptional#0;n#AbstractDataParser#0" />
-                <element signature="method#validateOptional#0;class#AbstractDataParser#0" />
+                <element signature="n#!!doc;n#LIVE_EARTHQUAKE_DATA_PAST_30_DAYS_STRING#0;n#DataUtils#0" />
+                <element signature="n#!!doc;n#LIVE_EARTHQUAKE_DATA_PAST_30_DAYS#0;n#DataUtils#0" />
+                <element signature="n#!!doc;n#getLifeExpectancyFromDataAndFilters#0;n#DataUtils#0" />
+                <element signature="method#getLifeExpectancyFromDataAndFilters#0;class#DataUtils#0" />
+                <element signature="method#makeCityMarkers#0;class#DataUtils#0" />
+                <element signature="n#!!doc;n#makeURL#0;n#DataUtils#0" />
+                <element signature="method#makeURL#0;class#DataUtils#0" />
               </folding>
             </state>
           </provider>
@@ -113,10 +80,33 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/model/parser/EarthQuakesParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1615">
-              <caret line="112" column="30" selection-start-line="112" selection-start-column="30" selection-end-line="112" selection-end-column="30" />
+            <state relative-caret-position="195">
+              <caret line="52" selection-start-line="52" selection-end-line="52" />
               <folding>
                 <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/model/pojo/EarthQuakeEntry.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="343">
+              <caret line="74" column="46" selection-start-line="74" selection-start-column="46" selection-end-line="74" selection-end-column="46" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#4413#4414#0" expanded="true" />
+                <element signature="e#4660#4661#0" expanded="true" />
+                <element signature="e#4838#4839#0" expanded="true" />
+                <element signature="e#5028#5029#0" expanded="true" />
+                <element signature="e#5220#5221#0" expanded="true" />
+                <element signature="e#5472#5473#0" expanded="true" />
+                <element signature="e#5708#5709#0" expanded="true" />
+                <element signature="e#5884#5885#0" expanded="true" />
+                <element signature="e#6074#6075#0" expanded="true" />
+                <element signature="method#equals#0;class#EarthQuakeEntry#0" />
+                <element signature="method#hashCode#0;class#EarthQuakeEntry#0" />
               </folding>
             </state>
           </provider>
@@ -218,7 +208,6 @@
         <option value="$PROJECT_DIR$/src/model/marker/OceanEarthQuakeMarker.java" />
         <option value="$PROJECT_DIR$/src/model/pojo/AirportEntry.java" />
         <option value="$PROJECT_DIR$/src/controller/DataParserBuilder.java" />
-        <option value="$PROJECT_DIR$/src/model/pojo/EarthQuakeEntry.java" />
         <option value="$PROJECT_DIR$/src/model/parser/DataParser.java" />
         <option value="$PROJECT_DIR$/src/model/parser/AbstractDataParser.java" />
         <option value="$PROJECT_DIR$/src/controller/FXApp.java" />
@@ -232,7 +221,6 @@
         <option value="$PROJECT_DIR$/src/model/marker/AirportMarker.java" />
         <option value="$PROJECT_DIR$/src/controller/EarthQuakeUtils.java" />
         <option value="$PROJECT_DIR$/src/model/marker/AbstractEarthQuakeMarker.java" />
-        <option value="$PROJECT_DIR$/src/controller/DataUtils.java" />
         <option value="$PROJECT_DIR$/src/controller/package-info.java" />
         <option value="$PROJECT_DIR$/src/model/marker/package-info.java" />
         <option value="$PROJECT_DIR$/src/model/parser/package-info.java" />
@@ -240,15 +228,17 @@
         <option value="$PROJECT_DIR$/src/controller/TestMain.java" />
         <option value="$PROJECT_DIR$/src/view/package-info.java" />
         <option value="$PROJECT_DIR$/src/view/LiveDataMap.java" />
-        <option value="$PROJECT_DIR$/src/model/parser/EarthQuakesParser.java" />
         <option value="$PROJECT_DIR$/src/model/parser/LifeExpectancyParser.java" />
         <option value="$PROJECT_DIR$/src/model/parser/AirportParser.java" />
+        <option value="$PROJECT_DIR$/src/controller/DataUtils.java" />
+        <option value="$PROJECT_DIR$/src/model/parser/EarthQuakesParser.java" />
+        <option value="$PROJECT_DIR$/src/model/pojo/EarthQuakeEntry.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-10" />
-    <option name="width" value="979" />
+    <option name="width" value="980" />
     <option name="height" value="1050" />
   </component>
   <component name="ProjectView">
@@ -257,6 +247,7 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -266,13 +257,36 @@
             </path>
             <path>
               <item name="EarthQuakesLiveDataOne" type="b2602c69:ProjectViewProjectNode" />
+              <item name="EarthQuakesLiveDataOne" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="EarthQuakesLiveDataOne" type="b2602c69:ProjectViewProjectNode" />
+              <item name="EarthQuakesLiveDataOne" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="model" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="EarthQuakesLiveDataOne" type="b2602c69:ProjectViewProjectNode" />
+              <item name="EarthQuakesLiveDataOne" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="model" type="462c0819:PsiDirectoryNode" />
+              <item name="parser" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="EarthQuakesLiveDataOne" type="b2602c69:ProjectViewProjectNode" />
+              <item name="EarthQuakesLiveDataOne" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="view" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="EarthQuakesLiveDataOne" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -385,7 +399,7 @@
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="848" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23793566" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.2124665" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -410,7 +424,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="5" type="SLIDING" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="6" weight="0.25" />
       <window_info anchor="right" id="Ant Build" order="7" weight="0.25" />
-      <window_info anchor="right" id="Run" order="8" weight="0.3230563" />
+      <window_info anchor="right" id="Run" order="8" weight="0.36193028" />
     </layout>
     <layout-to-restore>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2727882" />
@@ -591,18 +605,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/pojo/EarthQuakeEntry.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2720">
-          <caret line="198" column="11" selection-start-line="198" selection-start-column="11" selection-end-line="198" selection-end-column="11" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#equals#0;class#EarthQuakeEntry#0" />
-            <element signature="method#hashCode#0;class#EarthQuakeEntry#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/SearchUtils.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="295">
@@ -752,22 +754,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/controller/DataUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2380">
-          <caret line="188" column="7" lean-forward="true" selection-start-line="188" selection-start-column="7" selection-end-line="188" selection-end-column="7" />
-          <folding>
-            <element signature="n#!!doc;n#LIVE_EARTHQUAKE_DATA_PAST_30_DAYS_STRING#0;n#DataUtils#0" />
-            <element signature="n#!!doc;n#LIVE_EARTHQUAKE_DATA_PAST_30_DAYS#0;n#DataUtils#0" />
-            <element signature="n#!!doc;n#getLifeExpectancyFromDataAndFilters#0;n#DataUtils#0" />
-            <element signature="method#getLifeExpectancyFromDataAndFilters#0;class#DataUtils#0" />
-            <element signature="method#makeCityMarkers#0;class#DataUtils#0" />
-            <element signature="n#!!doc;n#makeURL#0;n#DataUtils#0" />
-            <element signature="method#makeURL#0;class#DataUtils#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/package-info.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="51">
@@ -786,16 +772,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
           <caret line="1" column="82" selection-start-line="1" selection-start-column="82" selection-end-line="1" selection-end-column="82" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/view/LiveDataMap.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7956">
-          <caret line="518" column="36" selection-start-line="518" selection-start-column="36" selection-end-line="518" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -866,16 +842,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/parser/EarthQuakesParser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1615">
-          <caret line="112" column="30" selection-start-line="112" selection-start-column="30" selection-end-line="112" selection-end-column="30" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/parser/LifeExpectancyParser.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1105">
@@ -907,6 +873,63 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
           <caret line="13" column="46" selection-start-line="13" selection-start-column="46" selection-end-line="13" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/pojo/EarthQuakeEntry.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="343">
+          <caret line="74" column="46" selection-start-line="74" selection-start-column="46" selection-end-line="74" selection-end-column="46" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#4413#4414#0" expanded="true" />
+            <element signature="e#4660#4661#0" expanded="true" />
+            <element signature="e#4838#4839#0" expanded="true" />
+            <element signature="e#5028#5029#0" expanded="true" />
+            <element signature="e#5220#5221#0" expanded="true" />
+            <element signature="e#5472#5473#0" expanded="true" />
+            <element signature="e#5708#5709#0" expanded="true" />
+            <element signature="e#5884#5885#0" expanded="true" />
+            <element signature="e#6074#6075#0" expanded="true" />
+            <element signature="method#equals#0;class#EarthQuakeEntry#0" />
+            <element signature="method#hashCode#0;class#EarthQuakeEntry#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/parser/EarthQuakesParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="52" selection-start-line="52" selection-end-line="52" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/view/LiveDataMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="531">
+          <caret line="346" column="56" selection-start-line="346" selection-start-column="56" selection-end-line="346" selection-end-column="56" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/controller/DataUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="122">
+          <caret line="90" column="146" lean-forward="true" selection-start-line="90" selection-start-column="73" selection-end-line="90" selection-end-column="146" />
+          <folding>
+            <element signature="n#!!doc;n#LIVE_EARTHQUAKE_DATA_PAST_30_DAYS_STRING#0;n#DataUtils#0" />
+            <element signature="n#!!doc;n#LIVE_EARTHQUAKE_DATA_PAST_30_DAYS#0;n#DataUtils#0" />
+            <element signature="n#!!doc;n#getLifeExpectancyFromDataAndFilters#0;n#DataUtils#0" />
+            <element signature="method#getLifeExpectancyFromDataAndFilters#0;class#DataUtils#0" />
+            <element signature="method#makeCityMarkers#0;class#DataUtils#0" />
+            <element signature="n#!!doc;n#makeURL#0;n#DataUtils#0" />
+            <element signature="method#makeURL#0;class#DataUtils#0" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -126,6 +126,7 @@ public class EarthQuakesParser extends AbstractXML<EarthQuakeEntry>{
       return this; // returns true if loop is finished meaning no exceptions happened
     }catch(Exception ex)
     {
+      ex.printStackTrace();
       System.err.println(ex.getMessage());
     }
     return null; // returns false if an exception occured

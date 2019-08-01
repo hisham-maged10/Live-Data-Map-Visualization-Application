@@ -66,8 +66,14 @@ public class EarthQuakeEntry implements DataEntry,Comparable<EarthQuakeEntry>{
     // extracts the String magnitude, made into a local variable because used twice, for big decimal and for magnitude
     String tempMagnitude = titleItems[0]
         .split("\\s+")[1];
-    this.exactMagnitude = new BigDecimal(tempMagnitude);
-    this.magnitude = Double.parseDouble(tempMagnitude);
+    if(!tempMagnitude.equalsIgnoreCase("?")) {
+      this.exactMagnitude = new BigDecimal(tempMagnitude);
+      this.magnitude = Double.parseDouble(tempMagnitude);
+    }else
+    {
+      this.exactMagnitude = new BigDecimal("0.0");
+      this.magnitude = Double.parseDouble("0.0");
+    }
 
       this.locationTitle = titleItems[1].trim();
     String[] points = locationPoints.split("\\s+");
