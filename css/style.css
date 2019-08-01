@@ -128,7 +128,7 @@
   float:left;
   width:0px;
   height:5px;
-  background:#FFF;
+  background:#0c93e4;
   position:absolute;
   left:0px;
   bottom:0px;
@@ -165,20 +165,6 @@
 .Modern-Slider .item.slick-active h5{
   -webkit-animation:fadeInLeft 1s both 1.5s;
           animation:fadeInLeft 1s both 1.5s;
-}
-
-.Modern-Slider .item .img-fill img{
-  -webkit-transform:scale(0) rotate(0deg);
-          transform:scale(0) rotate(0deg);
-  -webkit-animation:Slide-RotateSOut 1s both;
-          animation:Slide-RotateSOut 1s both;
-}
-
-.Modern-Slider .slick-active .img-fill img{
-  -webkit-transform:scale(1) rotate(360deg);
-          transform:scale(1) rotate(360deg);
-   -webkit-animation:Slide-RotateSIn 1s both;
-           animation:Slide-RotateSIn 1s both;
 }
 
 /* ==== Slider Transition === */
