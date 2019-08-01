@@ -105,12 +105,9 @@ A Map that visualizes the Life-Expectancy of humans, shading the countries accor
 ## 
 ## Project Timelapse
 ***Part one includes initial steps of parsing and loading Earthquakes data, life-expectancy data and initial visualization of map, Filtering API, Error handling.***
-<center>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/B0r_JLMiwho" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</center>
+
+[![Timelapse part 1](http://img.youtube.com/vi/B0r_JLMiwho/0.jpg)](http://www.youtube.com/watch?v=B0r_JLMiwho "Timelapse part 1") 
 
 ***Part two includes Redesign of Class Hierarchy, Full API Re-write to provide more extend-ability and ease of adding features, parsing and loading Cities' data, Airports and routes data, Adding interactivity to the map using mouse hover and mouse clicks .***
-<center>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/hTVmPN7iGek" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</center>
 
+[![Timelapse part 2](http://img.youtube.com/vi/hTVmPN7iGek/0.jpg)](http://www.youtube.com/watch?v=hTVmPN7iGek "Timelapse part 2")
