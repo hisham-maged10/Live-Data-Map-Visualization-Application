@@ -103,7 +103,7 @@ A Map that visualizes the Life-Expectancy of humans, shading the countries accor
 ![Life_Mouse](gif/mouse_life.gif)
 
 ## 
-## Project Timelapse
+## Project Timelapse (Click on previews to go to YTube)
 ***Part one includes initial steps of parsing and loading Earthquakes data, life-expectancy data and initial visualization of map, Filtering API, Error handling.***
 
 [![Timelapse part 1](http://img.youtube.com/vi/B0r_JLMiwho/0.jpg)](http://www.youtube.com/watch?v=B0r_JLMiwho "Timelapse part 1") 
