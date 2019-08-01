@@ -24,6 +24,16 @@
 ***By default the Application opens up on Earthquakes' data of the Past-Day.***
 
 ## 
+## Basic Features
+
+ - Basic Zoom functionalities as Google Maps
+ - Changing types of data using key strokes, '1' Earthquakes data, '2' Cities data, '3' Airports data, '4' Life-Expectancy data
+ - Zoom in using '+' and zoom out using '-', double mouse clicks, mouse scroll
+ - Movement around map using mouse clicks
+
+ ![zoom](gif/zoom.gif)
+
+## 
 
 ## Earthquakes Section
 *A Map that visualizes the Earthquake data in the form of interactive markers.*
@@ -91,3 +101,16 @@ A Map that visualizes the Life-Expectancy of humans, shading the countries accor
 - Can **change** the **Life-Expectancy values** to a **certain year** from **1960 to 2017** *inclusive* **representing** the *Life-Expectancy values* of countries for that year, **the default year used is 2017**.
 
 ![Life_Mouse](gif/mouse_life.gif)
+
+## 
+## Project Timelapse
+***Part one includes initial steps of parsing and loading Earthquakes data, life-expectancy data and initial visualization of map, Filtering API, Error handling.***
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/B0r_JLMiwho" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</center>
+
+***Part two includes Redesign of Class Hierarchy, Full API Re-write to provide more extend-ability and ease of adding features, parsing and loading Cities' data, Airports and routes data, Adding interactivity to the map using mouse hover and mouse clicks .***
+<center>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/hTVmPN7iGek" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</center>
+

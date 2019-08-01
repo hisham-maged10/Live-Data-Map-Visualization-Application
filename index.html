@@ -11,6 +11,12 @@
 <link rel="stylesheet" href="./css/menuStyle.css">
 <link rel="stylesheet" href="./css/sectionStyle.css">
 <link rel="stylesheet" href="https://stackedit.io/style.css" />
+<style>
+    iframe{
+        width:100%;
+        max-height: auto;
+    }
+</style>
 </head>
 <body style="background-color:#f8f8f8;">
 <header>
@@ -28,6 +34,7 @@
           <li><a href="#cities-section">Cities</a></li>
           <li><a href="#airports-section">Airports</a></li>
           <li><a href="#life-expectancy-section">Life-Expectancy</a></li>
+          <li><a href="#project-timelapse">Timelapse</a></li>
           <li><a href="./documentation/index.html">Documentation</a></li>
           <li><a href="https://github.com/hisham-maged10/Live-Data-Map-Visualization-Application">Source Code</a></li>
         </ul>
@@ -38,7 +45,7 @@
 
 </header>
 
-
+<div class = "container-fluid" style="padding-right: 0;padding-left: 0;">
 <!-- partial:index.partial.html -->
 <div class="Modern-Slider container-fluid">
   <!-- Item -->
@@ -118,6 +125,15 @@
 <p><img src="gif/provider.gif" alt="provider_selection"></p>
 <p><em><strong>By default the Application opens up on Earthquakes’ data of the Past-Day.</strong></em></p>
 <h2 id="section"></h2>
+<h2 id="basic-features">Basic Features</h2>
+<ul>
+<li>Basic Zoom functionalities as Google Maps</li>
+<li>Changing types of data using key strokes, ‘1’ Earthquakes data, ‘2’ Cities data, ‘3’ Airports data, ‘4’ Life-Expectancy data</li>
+<li>Zoom in using ‘+’ and zoom out using ‘-’, double mouse clicks, mouse scroll</li>
+<li>Movement around map using mouse clicks</li>
+</ul>
+<p><img src="gif/zoom.gif" alt="zoom"></p>
+<h2 id="section-1"></h2>
 <h2 id="earthquakes-section">Earthquakes Section</h2>
 <p><em>A Map that visualizes the Earthquake data in the form of interactive markers.</em><br>
 <em><strong>Have the following functionalities:</strong></em></p>
@@ -142,7 +158,7 @@
 <li><strong>Clicking</strong> on a <strong>City Marker</strong> hides all <strong>markers except Earthquake Markers that might affect the city.</strong></li>
 </ul>
 <p><img src="gif/mouse_earthquake.gif" alt="Interactivitiy_Earthquake"></p>
-<h2 id="section-1"></h2>
+<h2 id="section-2"></h2>
 <h2 id="cities-section">Cities Section</h2>
 <p>A Map that visualizes the Cities’ data in the form of interactive markers.<br>
 <em><strong>Have the following functionalities:</strong></em></p>
@@ -154,7 +170,7 @@
 <li>Have <strong>mouse interactivity</strong> where <strong>hovering</strong> on a <strong>City</strong> Marker <strong>shows information</strong> about it including <strong>city name, country name, population of city.</strong></li>
 </ul>
 <p><img src="gif/mouse_city.gif" alt="Mouse_City"></p>
-<h2 id="section-2"></h2>
+<h2 id="section-3"></h2>
 <h2 id="airports-section">Airports Section</h2>
 <p>A Map that visualizes the Airports’ data in the form of interactive markers.<br>
 <em><strong>Have the following functionalities:</strong></em></p>
@@ -167,7 +183,7 @@
 <li><strong>Clicking</strong> on <strong>Airport</strong> Marker <strong>hides</strong> all <strong>markers</strong> on the map, <strong>showing Lines</strong> from the <em>clicked on marker</em> to <em>other airport markers</em> <strong>representing</strong> all the <strong>existing routes</strong> from <strong>the clicked on marker as a source</strong> and other visible <strong>airports as destination</strong>, <strong>hiding</strong> all the <strong>airports</strong> that <strong>doesn’t have a route</strong>, <strong>Clicking</strong> <em>elsewhere</em> <strong>shows all markers</strong> returning the map to its original state.</li>
 </ul>
 <p><img src="gif/mouse_airport.gif" alt="Airport_Mouse"></p>
-<h2 id="section-3"></h2>
+<h2 id="section-4"></h2>
 <h2 id="life-expectancy-section">Life-Expectancy Section</h2>
 <p>A Map that visualizes the Life-Expectancy of humans, shading the countries accordingly to represent mapped values.<br>
 <em><strong>Have the following functionalities:</strong></em></p>
@@ -180,8 +196,26 @@
 <li>Can <strong>change</strong> the <strong>Life-Expectancy values</strong> to a <strong>certain year</strong> from <strong>1960 to 2017</strong> <em>inclusive</em> <strong>representing</strong> the <em>Life-Expectancy values</em> of countries for that year, <strong>the default year used is 2017</strong>.</li>
 </ul>
 <p><img src="gif/mouse_life.gif" alt="Life_Mouse"></p>
+<h2 id="section-5"></h2>
+<h2 id="project-timelapse">Project Timelapse</h2>
+<ul>
+<li><p><em>Part one includes initial steps of parsing and loading Earthquakes data, life-expectancy data and initial visualization of map, Filtering API, Error handling.</em></p></li>
+</ul>
+<center>
+<div class = "embed-responsive embed-responsive-16by9">
+<iframe src="https://www.youtube.com/embed/B0r_JLMiwho" allowfullscreen="" width="560" height="315"></iframe>
 </div>
-
+</center>
+<ul>
+<li><p><em>Part two includes Redesign of Class Hierarchy, Full API Re-write to provide more extend-ability and ease of adding features, parsing and loading Cities’ data, Airports and routes data, Adding interactivity to the map using mouse hover and mouse clicks .</em></p></li>
+</ul>
+<center>
+<div class = "embed-responsive embed-responsive-16by9">
+<iframe src="https://www.youtube.com/embed/hTVmPN7iGek" allowfullscreen="" width="560" height="315"></iframe>
+</div>
+</center>
+</div>
+</div>
 <!-- partial -->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
 <script src='https://kenwheeler.github.io/slick/slick/slick.js'></script>
