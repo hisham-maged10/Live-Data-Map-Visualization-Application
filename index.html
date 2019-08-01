@@ -108,78 +108,78 @@
 <li>Life-Expectancy of Humans data</li>
 </ul>
 <p><strong>Provide</strong> <strong><em>Functionalities</em> such as:</strong></p>
-<p><img src="gif/selection.gif" alt="Data_selection"></p>
 <ul>
 <li><strong>Switching between the types of visualized data.</strong></li>
 </ul>
-<p><img src="gif/provider.gif" alt="provider_selection"></p>
+<p><img src="gif/selection.gif" alt="Data_selection"></p>
 <ul>
 <li><strong>Switching between the Satellite view of the map.</strong></li>
 </ul>
+<p><img src="gif/provider.gif" alt="provider_selection"></p>
 <p><em><strong>By default the Application opens up on Earthquakes’ data of the Past-Day.</strong></em></p>
 <h2 id="section"></h2>
 <h2 id="earthquakes-section">Earthquakes Section</h2>
 <p><em>A Map that visualizes the Earthquake data in the form of interactive markers.</em><br>
 <em><strong>Have the following functionalities:</strong></em></p>
-<p><img src="gif/map.gif" alt="Earthquakes Map"></p>
 <ul>
 <li><strong>Changing the Earthquake markers’ color dynamically</strong> based on their <strong>depth</strong> producing a <strong>light blue</strong> color for <strong>shallow</strong> depth, <strong>yellow</strong> for <strong>moderate</strong> and <strong>red</strong> for <strong>intense</strong>.</li>
 <li>The <strong>Increase</strong> or <strong>decrease</strong> of marker’s <strong>size</strong> dynamically based on <strong>magnitude</strong>.</li>
 <li><strong>Representation</strong> of <strong>Earthquakes</strong> changing their <strong>shape</strong> based on <strong>where they occurred</strong> where quakes that happened on <strong>land</strong> are in the form of <strong>circles</strong>, while on <strong>ocean</strong> is in the form of <strong>rounded rectangles</strong>.</li>
 <li><strong>Animation</strong> on the <strong>size</strong> of markers if they <strong>occurred</strong> in the <strong>past hour/day</strong> where they appear in <strong>radiating motion</strong>.</li>
 </ul>
-<p><img src="gif/data_earthquake.gif" alt="Data_selection_Earthquake"></p>
+<p><img src="gif/map.gif" alt="Earthquakes Map"></p>
 <ul>
 <li>The <strong>Ability</strong> to <strong>load</strong> and <strong>visualize</strong> Earthquake Data from <strong>USGS’s RSS feed</strong> in the <strong>form of Markers</strong> from <strong>USGS</strong> <a href="https://earthquake.usgs.gov/earthquakes/map/">https://earthquake.usgs.gov/earthquakes</a> as <strong>Live data</strong> including <strong>last hour, last day, last week</strong> and <strong>last month</strong> options or <strong>locally</strong> from your <strong>PC</strong> using a file chooser. <em><strong>(Uses Xerces 2 XML Library)</strong></em></li>
 </ul>
-<p><img src="gif/filter_earthquake.gif" alt="Filter GIF"></p>
+<p><img src="gif/data_earthquake.gif" alt="Data_selection_Earthquake"></p>
 <ul>
 <li>The <strong>Ability</strong> to <strong>filter</strong> <strong>data</strong> based on either or both <strong>magnitude</strong> and <strong>depth</strong> criteria with an <strong>upper limit</strong>, <strong>lower limit</strong>, <strong>exact</strong> <em><strong>(uses exact floating point comparison)</strong></em> or <strong>ranged</strong> filters <strong>on loading of data or anytime after loading data</strong>.</li>
 </ul>
-<p><img src="gif/mouse_earthquake.gif" alt="Interactivitiy_Earthquake"></p>
+<p><img src="gif/filter_earthquake.gif" alt="Filter GIF"></p>
 <ul>
 <li><strong>Showing</strong> <strong>information</strong> about the marker on <strong>mouse hover</strong> in the form of <strong>“magnitude, depth, description about its location, age”.</strong></li>
 <li><strong>Clicking</strong> <strong>on</strong> an Earthquake <strong>Marker</strong>, <strong>hides</strong> all <strong>markers</strong> on map <strong>except</strong> the <strong>City</strong> markers that are in its <strong>Threat circle aka Epicenter</strong>, <strong>Plotting</strong> a <strong>line</strong> between the <strong>Earthquake</strong> and the <strong>city or cities it might affect</strong>.</li>
 <li><strong>Clicking</strong> on a <strong>City Marker</strong> hides all <strong>markers except Earthquake Markers that might affect the city.</strong></li>
 </ul>
+<p><img src="gif/mouse_earthquake.gif" alt="Interactivitiy_Earthquake"></p>
 <h2 id="section-1"></h2>
 <h2 id="cities-section">Cities Section</h2>
 <p>A Map that visualizes the Cities’ data in the form of interactive markers.<br>
 <em><strong>Have the following functionalities:</strong></em></p>
-<p><img src="gif/city.png" alt="City Map"></p>
 <ul>
 <li>The <strong>Ability</strong> to <strong>load and visualize</strong> <em>cities’</em> data of <strong>JSON</strong> format.</li>
 </ul>
-<p><img src="gif/mouse_city.gif" alt="Mouse_City"></p>
+<p><img src="gif/city.png" alt="City Map"></p>
 <ul>
 <li>Have <strong>mouse interactivity</strong> where <strong>hovering</strong> on a <strong>City</strong> Marker <strong>shows information</strong> about it including <strong>city name, country name, population of city.</strong></li>
 </ul>
+<p><img src="gif/mouse_city.gif" alt="Mouse_City"></p>
 <h2 id="section-2"></h2>
 <h2 id="airports-section">Airports Section</h2>
 <p>A Map that visualizes the Airports’ data in the form of interactive markers.<br>
 <em><strong>Have the following functionalities:</strong></em></p>
-<p><img src="gif/airport.png" alt="Airport_Map"></p>
 <ul>
 <li>The <strong>Ability</strong> to <strong>load and visualize</strong> <em>Airport’s</em> data from <a href="https://openflights.org/">https://openflights.org/</a> which holds live Airport data. <em><strong>(Uses Apache Commons CSV Parser library)</strong></em></li>
 </ul>
-<p><img src="gif/mouse_airport.gif" alt="Airport_Mouse"></p>
+<p><img src="gif/airport.png" alt="Airport_Map"></p>
 <ul>
 <li><strong>Hovering</strong> on <strong>Airport</strong> Marker <strong>shows information</strong> about the airport including <strong>airport name, airport country, ICAO (3-letter code) and Timezone in UTC</strong></li>
 <li><strong>Clicking</strong> on <strong>Airport</strong> Marker <strong>hides</strong> all <strong>markers</strong> on the map, <strong>showing Lines</strong> from the <em>clicked on marker</em> to <em>other airport markers</em> <strong>representing</strong> all the <strong>existing routes</strong> from <strong>the clicked on marker as a source</strong> and other visible <strong>airports as destination</strong>, <strong>hiding</strong> all the <strong>airports</strong> that <strong>doesn’t have a route</strong>, <strong>Clicking</strong> <em>elsewhere</em> <strong>shows all markers</strong> returning the map to its original state.</li>
 </ul>
+<p><img src="gif/mouse_airport.gif" alt="Airport_Mouse"></p>
 <h2 id="section-3"></h2>
 <h2 id="life-expectancy-section">Life-Expectancy Section</h2>
 <p>A Map that visualizes the Life-Expectancy of humans, shading the countries accordingly to represent mapped values.<br>
 <em><strong>Have the following functionalities:</strong></em></p>
-<p><img src="gif/life.png" alt="Life Expectancy Map"></p>
 <ul>
 <li>Have the <strong>Ability</strong> to <strong>load and visualize</strong> <em>Life-Expectancy data</em> from <a href="https://data.worldbank.org/">https://data.worldbank.org/</a> <strong>Mapping</strong> the <strong>values</strong> to <strong>Color values</strong> to <strong>represent</strong> them <strong>on the map</strong> accordingly. (Uses Apache Commons’ CSVParser library)</li>
 <li><strong>Values</strong> being <strong>represented</strong> where <strong>high Life-Expectancy</strong> <em>( 90 years old )</em> <strong>tends</strong> to the <strong>blue shade</strong> while <strong>low Life-Expectancy</strong> <strong>( 45 years old )</strong> <strong>tends</strong> to <strong>the red shade.</strong></li>
 </ul>
-<p><img src="gif/mouse_life.gif" alt="Life_Mouse"></p>
+<p><img src="gif/life.png" alt="Life Expectancy Map"></p>
 <ul>
 <li>Can <strong>change</strong> the <strong>Life-Expectancy values</strong> to a <strong>certain year</strong> from <strong>1960 to 2017</strong> <em>inclusive</em> <strong>representing</strong> the <em>Life-Expectancy values</em> of countries for that year, <strong>the default year used is 2017</strong>.</li>
 </ul>
+<p><img src="gif/mouse_life.gif" alt="Life_Mouse"></p>
 </div>
 
 <!-- partial -->
